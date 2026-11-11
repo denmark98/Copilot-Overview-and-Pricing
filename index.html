@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>AI in Power Platform + Dynamics 365: what it does and what it costs</title>
+<meta name="description" content="A plain-English map of the AI assistants and agents in Power Platform and Dynamics 365, by product area, with status, cost and a cost calculator.">
+<style>
+:root{
+  --paper:#f3f5f7;--card:#ffffff;--ink:#16202a;--muted:#55616d;--line:#d8dde2;--soft:#e9edf1;
+  --asst:#2a6fbb;--agent:#d4501a;--behind:#76808a;--build:#6250d6;
+  --u-bg:#fdebd9;--u-fg:#7a3a05;--l-bg:#e9e5fa;--l-fg:#3f3190;--i-bg:#dff1e4;--i-fg:#1d5a30;--q-bg:#eef0f2;--q-fg:#44505b;
+  --focus:#1a55c8;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--paper:#11161b;--card:#1a2128;--ink:#e8ecef;--muted:#a3aeb8;--line:#2d3842;--soft:#222b34;
+  --asst:#5aa0ee;--agent:#f08050;--behind:#8f99a3;--build:#7d70e6;
+  --u-bg:#4a2f14;--u-fg:#ffd9b0;--l-bg:#32295f;--l-fg:#d9d2ff;--i-bg:#1b3d27;--i-fg:#bfe9cb;--q-bg:#2a333c;--q-fg:#c3ccd4;--focus:#8db6ff}
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:12px}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--sans)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.wrap{max-width:980px;margin:0 auto;padding:40px 20px 72px}
+h1,h2{font-family:var(--serif);font-weight:600;letter-spacing:-.01em;margin:0}
+h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1}
+h2{font-size:1.6rem;line-height:1.2;margin-bottom:6px}
+.lead{font-size:1.15rem;max-width:62ch;margin:14px 0 6px}
+.sub{color:var(--muted);max-width:62ch;margin:0}
+section{margin-top:56px}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px 24px;margin:16px 0 18px;padding:0;list-style:none}
+.legend li{display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:start;font-size:.95rem}
+.sw{width:14px;height:14px;border-radius:3px;margin-top:5px;display:inline-block}
+.sw.C,.seg.C{background:var(--asst)}.sw.A,.seg.A{background:var(--agent)}.sw.B,.seg.B{background:var(--behind)}.sw.S,.seg.S{background:var(--build)}
+.legend b{display:block}
+.legend span.d{color:var(--muted)}
+.chart{display:grid;gap:2px;margin:0;padding:0;list-style:none}
+.chart button{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:230px 1fr 34px;gap:12px;align-items:center;padding:3px 8px;border-radius:8px}
+.chart button:hover{background:var(--soft)}
+.chart button[aria-pressed="true"]{background:var(--card);box-shadow:inset 0 0 0 1px var(--line)}
+.chart button:focus-visible{outline:3px solid var(--focus)}
+.lbl{font-size:.92rem;line-height:1.25}
+.bar{display:flex;gap:2px;height:20px}
+.seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.78rem;font-weight:600;min-width:0}
+.seg:first-child{border-radius:4px 0 0 4px}.seg:last-child{border-radius:0 4px 4px 0}.seg:only-child{border-radius:4px}
+.tot{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted);font-size:.92rem}
+.hint{color:var(--muted);font-size:.9rem;margin:12px 8px 0}
+.tools{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:18px 0 14px}
+.seg-btns{display:flex;flex-wrap:wrap;gap:6px}
+.seg-btns button,.tools input{font:inherit;font-size:.92rem;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 12px}
+.seg-btns button{cursor:pointer}
+.seg-btns button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tools input{min-width:220px;flex:1 1 220px;max-width:340px}
+.tools label{font-size:.9rem;color:var(--muted)}
+.exp-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin:6px 0 12px}
+.exp-head h3{font-family:var(--serif);font-size:1.3rem;margin:0}
+.exp-head span{color:var(--muted);font-size:.92rem}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 10px}
+.item .top{display:flex;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;align-items:flex-start}
+.item h4{margin:0;font-size:1.02rem;display:flex;gap:9px;align-items:flex-start;line-height:1.35}
+.item h4 .sw{margin-top:5px;flex:none}
+.item .area{display:block;font-weight:400;font-size:.82rem;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.78rem;line-height:1.2;padding:4px 9px;border-radius:999px;background:var(--soft);color:var(--q-fg);white-space:nowrap}
+.chip.ret{background:#fbdcdc;color:#7b1d1d}
+@media (prefers-color-scheme:dark){.chip.ret{background:#5a2323;color:#ffd5d5}}
+.chip.pv{background:transparent;border:1px solid var(--line)}
+.chip.pp{background:var(--u-bg);color:var(--u-fg)}
+h3.sec{font-family:var(--serif);font-size:1.2rem;margin:26px 0 8px}
+.legend2{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.cc p.src{font-size:.8rem;color:var(--muted);margin-top:8px}
+.item p{margin:8px 0 10px;color:var(--muted);font-size:.94rem}
+.cost{display:inline-block;font-size:.82rem;font-weight:600;padding:4px 10px;border-radius:6px}
+.cost.U{background:var(--u-bg);color:var(--u-fg)}.cost.L,.cost.M{background:var(--l-bg);color:var(--l-fg)}
+.cost.I{background:var(--i-bg);color:var(--i-fg)}.cost.Q,.cost.N{background:var(--q-bg);color:var(--q-fg);border:1px dashed var(--line)}
+details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+summary{cursor:pointer;font-size:.9rem;font-weight:600;padding:2px 0}
+.dl{margin:10px 0 2px;display:grid;gap:10px}
+.dl h5{margin:0 0 2px;font-size:.8rem;color:var(--muted);font-weight:600}
+.dl div p{margin:0;color:var(--ink);font-size:.9rem}
+.dl ul{margin:0;padding-left:18px;font-size:.88rem;overflow-wrap:anywhere}
+.empty{padding:18px;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:12px}
+.cost-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:20px 0}
+.cc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.cc .cost{margin-bottom:8px}
+.cc .n{font-family:var(--serif);font-size:2.1rem;line-height:1;margin:2px 0 6px}
+.cc p{margin:0 0 8px;color:var(--muted);font-size:.92rem}
+.cc ul{margin:0;padding-left:18px;font-size:.88rem}
+.disclaimer{margin:20px 0 0;max-width:78ch;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--ink);border-radius:0 8px 8px 0;font-size:.9rem;color:var(--muted)}
+.disclaimer b{color:var(--ink)}
+.note{background:var(--card);border-left:4px solid var(--ink);padding:12px 16px;margin:18px 0;border-radius:0 8px 8px 0;font-size:.95rem}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.92rem}
+caption{text-align:left;font-weight:600;padding:0 0 8px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--soft);font-weight:600}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.tw{overflow-x:auto}
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+footer p{margin:0 0 8px;max-width:78ch}
+@media (max-width:640px){
+  .chart button{grid-template-columns:1fr 30px;grid-template-areas:"l t" "b b"}
+  .chart .lbl{grid-area:l}.chart .tot{grid-area:t}.chart .bar{grid-area:b}
+  .wrap{padding-top:28px}
+}
+.calc-actions{display:flex;gap:8px;margin:16px 0 0}
+.calc-actions button,.calc select,.calc input[type=number],.opt select{font:inherit;font-size:.92rem;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.calc-actions button{cursor:pointer;padding:7px 14px}
+.calc input[type=number]{width:92px}
+.calc td.v,.calc td.c{font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.calc .inp{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.calc .inp label{font-size:.84rem;color:var(--muted);display:flex;flex-direction:column;gap:2px}
+.calc small{display:block;color:var(--muted);font-size:.8rem;font-weight:400}
+.opt{display:flex;flex-wrap:wrap;gap:6px 22px;margin:8px 0 6px;font-size:.95rem}
+.opt label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.result{margin-top:16px}
+.result .cc .n{font-size:1.7rem}
+.total{background:var(--ink);color:var(--paper);border-radius:12px;padding:16px 20px;margin-top:12px;display:flex;flex-wrap:wrap;gap:8px 32px;align-items:baseline}
+.total b{font-family:var(--serif);font-size:1.9rem;font-weight:600}
+.total span{font-size:.9rem;opacity:.85}
+.tabbar{position:sticky;top:0;z-index:5;background:var(--paper);margin:34px -20px 0;padding:0 20px;border-bottom:1px solid var(--line)}
+[role=tablist]{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin}
+[role=tab]{font:inherit;font-size:.98rem;color:var(--muted);background:transparent;border:0;border-bottom:3px solid transparent;padding:12px 14px 10px;cursor:pointer;white-space:nowrap;margin-bottom:-1px}
+[role=tab]:hover{color:var(--ink)}
+[role=tab][aria-selected="true"]{color:var(--ink);font-weight:600;border-bottom-color:var(--ink)}
+[role=tabpanel]{outline:none;scroll-margin-top:52px}
+[role=tabpanel]>section:first-child{margin-top:32px}
+[role=tabpanel]:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+.sechead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.linkbtn{font:inherit;font-size:.9rem;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+.linkbtn:hover{border-color:var(--muted)}
+.pickrow{margin-top:32px}
+.pickline{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:14px}
+.pick{position:relative;display:inline-block}
+.pickbtn{padding:8px 14px;min-width:220px;text-align:left}
+.pickbtn::after{content:"";display:inline-block;float:right;margin:5px 0 0 12px;border:solid var(--muted);border-width:0 2px 2px 0;padding:3px;transform:rotate(45deg)}
+.pickpanel{position:absolute;left:0;top:calc(100% + 6px);z-index:6;min-width:320px;max-width:92vw;max-height:340px;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.pickpanel[hidden]{display:none}
+.pickactions{display:flex;gap:8px;margin-bottom:8px}
+.pickpanel label{display:flex;align-items:center;gap:8px;padding:5px 2px;font-size:.94rem;cursor:pointer}
+.pickpanel input{width:17px;height:17px;accent-color:var(--ink)}
+.pickpanel small{color:var(--muted);margin-left:auto}
+.chips2{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.chips2 li{display:inline-flex;align-items:center;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px 4px 3px 12px;font-size:.88rem}
+.chips2 button{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:1.1rem;line-height:1;padding:2px 8px;border-radius:999px}
+.chips2 button:hover{color:var(--ink)}
+details.grp{margin:0 0 12px;border-top:0;padding-top:0}
+details.grp>summary{list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:11px 14px;font-size:1rem}
+details.grp>summary::-webkit-details-marker{display:none}
+details.grp>summary::before{content:"";flex:none;border:solid var(--muted);border-width:0 2px 2px 0;padding:3px;transform:rotate(-45deg)}
+details.grp[open]>summary::before{transform:rotate(45deg)}
+.gname{font-weight:600}
+.gcount{color:var(--muted);font-size:.88rem}
+.gkinds{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.82rem;color:var(--muted)}
+.gk{display:inline-flex;align-items:center;gap:5px}
+.gk .sw{width:10px;height:10px;margin:0;border-radius:2px}
+.grpbody{padding-top:10px}
+.grpactions{display:flex;gap:8px;margin:0 0 12px}
+.grpactions[hidden]{display:none}
+.pickgroup{font-size:.8rem;color:var(--muted);margin:8px 2px 2px;border-top:1px solid var(--line);padding-top:8px}
+.calc tr[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+  <h1>AI in Power Platform + Dynamics 365</h1>
+  <p class="lead" id="lead"></p>
+  <p class="sub">Explore what each AI feature does, estimate costs, and read the licence rules behind them. <a href="#calculator" id="to-calc">Go to the cost calculator.</a></p>
+  <p class="disclaimer" role="note"><b>Disclaimer.</b> The data on this page comes from the latest licensing guide information, November 2026: the Dynamics 365, Power Platform and Copilot Studio licensing guides, supported by Microsoft Learn pages read on 2026-11-11. Prices and terms can change, and this page is an estimate, not a quote or legal advice. Check the current guides and your own agreement with Microsoft before you rely on it.</p>
+</header>
+
+<div class="tabbar"><div role="tablist" aria-label="Sections" id="tablist">
+  <button type="button" role="tab" id="tab-explore" data-tab="explore" aria-controls="panel-explore" aria-selected="true">Explore features</button>
+  <button type="button" role="tab" id="tab-calc" data-tab="calc" aria-controls="panel-calc" aria-selected="false" tabindex="-1">Cost calculator</button>
+  <button type="button" role="tab" id="tab-maturity" data-tab="maturity" aria-controls="panel-maturity" aria-selected="false" tabindex="-1">Agent maturity</button>
+  <button type="button" role="tab" id="tab-cost" data-tab="cost" aria-controls="panel-cost" aria-selected="false" tabindex="-1">Licences and costs</button>
+  <button type="button" role="tab" id="tab-studio" data-tab="studio" aria-controls="panel-studio" aria-selected="false" tabindex="-1">Copilot Studio and shared layers</button>
+</div></div>
+<div role="tabpanel" id="panel-explore" data-panel="explore" aria-labelledby="tab-explore" tabindex="0">
+<section aria-labelledby="h-pick" class="pickrow">
+  <h2 id="h-pick">Choose areas</h2>
+  <p class="sub">Pick one or more areas. The chart and the feature list below follow your choice.</p>
+  <div class="pickline">
+    <div class="pick" id="pick">
+      <button type="button" class="linkbtn pickbtn" id="pick-btn" aria-expanded="false" aria-controls="pick-panel">Choose areas</button>
+      <div class="pickpanel" id="pick-panel" hidden>
+        <div class="pickactions"><button type="button" class="linkbtn" id="pick-all">Select all</button><button type="button" class="linkbtn" id="pick-none">Clear</button></div>
+        <div id="pick-list" role="group" aria-label="Areas"></div>
+      </div>
+    </div>
+    <ul class="chips2" id="pick-chips" aria-label="Selected areas"></ul>
+  </div>
+</section>
+
+<section aria-labelledby="h-map" id="map-section" hidden>
+  <div class="sechead"><h2 id="h-map">Where the AI lives</h2><button type="button" class="linkbtn" id="chart-fold" aria-expanded="false" aria-controls="chart-body">Show chart</button></div>
+  <div id="chart-body" hidden>
+  <p class="sub" id="chart-sub"></p>
+  <ul class="legend" id="legend"></ul>
+  <ul class="chart" id="chart"></ul>
+  <p class="hint" id="chart-hint"></p>
+  </div>
+</section>
+
+<section aria-labelledby="h-exp" id="explorer">
+  <h2 id="h-exp">What each feature does</h2>
+  <div class="tools">
+    <div class="seg-btns" id="kinds" role="group" aria-label="Filter by kind"></div>
+    <label class="sr" for="q" style="position:absolute;left:-9999px">Search all features</label>
+    <input id="q" type="search" placeholder="Search all areas, for example invoice" autocomplete="off">
+  </div>
+  <div class="exp-head"><h3 id="area-title"></h3><span id="area-count"></span></div>
+  <div class="grpactions" id="grpactions" hidden><button type="button" class="linkbtn" id="exp-all">Expand all areas</button><button type="button" class="linkbtn" id="exp-none">Collapse all areas</button></div>
+  <div id="list"></div>
+</section>
+
+
+</div>
+<div role="tabpanel" id="panel-calc" data-panel="calc" aria-labelledby="tab-calc" tabindex="0" hidden>
+<section aria-labelledby="h-calc" id="calculator">
+  <h2 id="h-calc">Cost calculator</h2>
+  <p class="sub">Choose the areas you use, then fill in licences and expected agent usage. If a chosen area runs agents on Copilot Credits, Copilot Studio is added automatically. It uses the list prices and documented credit rates on this page.</p>
+  <div class="calc-actions"><button type="button" id="calc-example">Load an example</button><button type="button" id="calc-reset">Reset</button></div>
+
+  <h3 class="sec">1. Choose areas</h3>
+  <div class="pickline">
+    <div class="pick" id="cpick">
+      <button type="button" class="linkbtn pickbtn" id="cpick-btn" aria-expanded="false" aria-controls="cpick-panel">Choose areas</button>
+      <div class="pickpanel" id="cpick-panel" hidden>
+        <div class="pickactions"><button type="button" class="linkbtn" id="cpick-all">Select all</button><button type="button" class="linkbtn" id="cpick-none">Clear</button></div>
+        <div id="cpick-list" role="group" aria-label="Areas for the calculator"></div>
+      </div>
+    </div>
+    <ul class="chips2" id="cpick-chips" aria-label="Areas in the calculator"></ul>
+  </div>
+  <p class="sub" id="calc-auto" aria-live="polite" style="margin-top:10px"></p>
+  <div class="empty" id="calc-empty" style="margin-top:14px">Choose the areas you use to start the estimate.</div>
+
+  <div id="calc-licwrap" hidden>
+    <h3 class="sec">2. Licences</h3>
+    <div class="tw"><table class="calc"><thead><tr><th scope="col">App</th><th scope="col">Licence</th><th scope="col">Users</th><th scope="col" style="text-align:right">Per month</th></tr></thead><tbody id="calc-lic"></tbody></table></div>
+  </div>
+
+  <div id="calc-studio" hidden>
+    <h3 class="sec">3. Agents that come with your areas</h3>
+    <p class="sub">Each chosen area lists its agents. Microsoft has published credit rates for only a few, so for the rest enter an estimate in credits a month, for example from Microsoft’s Copilot Credit Estimator. Copilot Studio is the last group, for voice, apps and custom agents.</p>
+    <div id="calc-groups" style="margin-top:12px"></div>
+    <h3 class="sec">4. How you buy credits</h3>
+    <div class="opt" role="radiogroup" aria-label="How you buy credits">
+      <label><input type="radio" name="buy" value="mix" checked> Cheapest mix of capacity packs and pay-as-you-go</label>
+      <label><input type="radio" name="buy" value="payg"> Pay-as-you-go only</label>
+    </div>
+  </div>
+
+  <div class="result" id="calc-out" aria-live="polite" hidden></div>
+  <p class="sub" style="margin-top:14px">An estimate, not a quote. Prices are USD list prices, subject to change, and licences are billed annually. Credits bundled with Premium licences are pooled across the tenant. Capacity packs are billed annually, unused credits do not roll over and usage above purchased capacity can be blocked, so keep pay-as-you-go for the overflow. Not included: Dataverse storage add-ons, Teams Phone, Customer Voice add-ons and other add-on capacity. Sales Order Agent credits use 14 per request plus 5 when an attachment has sales data, which reproduces Microsoft’s 1,650-credit example but is my reconstruction. Agents with no published rate need a figure from Microsoft’s Copilot Credit Estimator.</p>
+</section>
+</div>
+<div role="tabpanel" id="panel-maturity" data-panel="maturity" aria-labelledby="tab-maturity" tabindex="0" hidden>
+<section aria-labelledby="h-status">
+  <h2 id="h-status">How mature are the agents?</h2>
+  <p class="sub">The Dynamics 365 licensing guide sorts agents into those named in its main sections and those in a paid public preview appendix.</p>
+  <div class="cost-grid" id="guidegrid"></div>
+  <h3 class="sec">Status wording on the Microsoft Learn pages</h3>
+  <div class="cost-grid" id="statusgrid"></div>
+  <p class="sub">A missing label does not mean generally available. It means the page did not say. None of the Learn pages showed a date.</p>
+</section>
+</div>
+<div role="tabpanel" id="panel-cost" data-panel="cost" aria-labelledby="tab-cost" tabindex="0" hidden>
+<section aria-labelledby="h-cost">
+  <h2 id="h-cost">What does it cost?</h2>
+  <p class="sub">Tags in the list come from the Dynamics 365, Power Platform and Copilot Studio licensing guides (November 2026) and Microsoft Learn. The tables below show the rules behind them.</p>
+
+  <h3 class="sec">Dynamics 365 licence prices</h3>
+  <p class="sub">List prices in USD per user per month, billed annually, from the Dynamics 365 Licensing Guide. They are the price of the licence itself, and agents need credits on top.</p>
+  <div class="tw" style="margin-top:10px"><table><thead><tr><th scope="col">App</th><th scope="col">Licence and list price</th><th scope="col">Guide page</th></tr></thead><tbody id="seats"></tbody></table></div>
+
+  <h3 class="sec">Assistants and other AI: which licence includes them</h3>
+  <div class="tw"><table><thead><tr><th scope="col">App</th><th scope="col">Included in</th><th scope="col">Not included in</th><th scope="col">Guide page</th></tr></thead><tbody id="asst"></tbody></table></div>
+
+  <h3 class="sec">Agents: Copilot Credits</h3>
+  <p class="sub">Every Dynamics 365 agent needs Copilot Credits plus a licence for its app. Credits are bundled only with some Premium licences.</p>
+  <div class="tw" style="margin-top:10px"><table><thead><tr><th scope="col">App</th><th scope="col">Credits included</th><th scope="col">Sold separately for</th></tr></thead><tbody id="creds"></tbody></table></div>
+  <div class="note" id="costnote"></div>
+  <div class="cost-grid" id="costgrid"></div>
+
+  <h3 class="sec">Power Platform licences</h3>
+  <p class="sub">The platform under the shared layer. The Power Platform guide lists no AI features for Power Automate or Power Pages, so they appear here for price only.</p>
+  <div class="tw" style="margin-top:10px"><table><thead><tr><th scope="col">Product</th><th scope="col">List price</th><th scope="col">Notes</th></tr></thead><tbody id="platform"></tbody></table></div>
+
+  <h3 class="sec">How credits are bought</h3>
+  <div class="tw"><table><thead><tr><th scope="col">Option</th><th scope="col">Price</th><th scope="col">Things to know</th></tr></thead><tbody id="buy"></tbody></table></div>
+
+  <h3 class="sec">What the documented charges come to</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th scope="col">Feature</th><th scope="col">Documented charge</th><th scope="col">In dollars (my arithmetic)</th></tr></thead>
+    <tbody id="rates"></tbody>
+  </table>
+  </div>
+  <p class="sub" style="margin-top:10px">Dollar figures use the pay-as-you-go list price of $0.01 per credit (USD, subject to change). Most other agents have no published per-action rate. Microsoft's Copilot Credit Estimator is guidance only and not a binding offer.</p>
+</section>
+</div>
+<div role="tabpanel" id="panel-studio" data-panel="studio" aria-labelledby="tab-studio" tabindex="0" hidden>
+<section aria-labelledby="h-span">
+  <h2 id="h-span">What spans several apps</h2>
+  <p class="sub">No single AI feature covers every app, but four shared layers cross many of them.</p>
+  <div class="cost-grid" id="spangrid"></div>
+</section>
+
+<section aria-labelledby="h-cs">
+  <h2 id="h-cs">Build your own: Copilot Studio</h2>
+  <p class="sub">Copilot Studio is the platform for building custom agents, apps, workflows and agent flows with natural language or a graphical interface. Microsoft's own Dynamics 365 agents are built with it, and you can extend them with it.</p>
+  <h3 class="sec">Three ways to build</h3>
+  <div class="tw"><table><thead><tr><th scope="col">Way to build</th><th scope="col">What it builds</th><th scope="col">What it costs</th><th scope="col">Status</th></tr></thead><tbody id="csharness"></tbody></table></div>
+  <h3 class="sec">How it can be used</h3>
+  <div class="tw"><table><thead><tr><th scope="col">Use</th><th scope="col">How it works</th><th scope="col">What covers the cost</th></tr></thead><tbody id="csuse"></tbody></table></div>
+  <h3 class="sec">What you need to start</h3>
+  <div class="tw"><table><thead><tr><th scope="col">Item</th><th scope="col">Details</th></tr></thead><tbody id="csstart"></tbody></table></div>
+  <p class="sub" style="margin-top:10px">Sources: Copilot Studio Licensing Guide (pp.4-17), Dynamics 365 Licensing Guide (pp.63, 77) and Power Platform Licensing Guide (pp.7, 15, 24).</p>
+</section>
+</div>
+
+
+<footer>
+  <p>Compiled on 2026-11-11 from Microsoft Learn (starting from <a href="https://learn.microsoft.com/en-us/dynamics365/copilot/ai-get-started" rel="noopener">Agents, Copilot, and AI capabilities in Dynamics 365 apps</a>), and the Dynamics 365, Power Platform and Copilot Studio licensing guides (all November 2026). The guides say they do not replace your agreement, which decides what you pay.</p>
+  <p>The split into assistants, agents and behind-the-scenes features is a classification made for this page, not Microsoft's. "Behind the scenes" combines built-in features and developer connectors (MCP).</p>
+  <p>Naming: the Copilot Studio guide says Microsoft 365 Copilot was rebranded Microsoft Copilot in August 2026. This page keeps “Microsoft 365 Copilot” where the Learn pages and Dynamics 365 guide use it.</p>
+  <p>The Business Central Expense Agent appears in the agent research but not in the first feature list, so it was added to Business Central.</p>
+  <p>Not covered: the guides name no assistant features for Supply Chain, Commerce, Customer Insights, Project Operations or Human Resources, give no per-action credit rates for Dynamics 365 agents, and do not say whether Dynamics 365 licences cover the shared Power Apps features inside Dynamics 365 apps. Ask your Microsoft account team for those. Several features the guides list by name only (for example the Sales Insights set and Intelligent Insights) have no description in them, so the descriptions on this page are kept to what the guides say.</p>
+</footer>
+</main>
+
+<script id="data" type="application/json">{"items":[{"a":"Shared: model-driven apps","n":"Microsoft Copilot (Microsoft 365 Copilot chat) in model-driven apps","t":"C","d":"Gives summaries, suggestions and guided actions inside the app, based on your organisation's data.","s":"PRV","c":"L","x":-1,"ret":false,"cl":"Power Apps: needs Premium plus a Microsoft Copilot licence","ct":"Power Platform Licensing Guide p.7, note 6: in-app AI assistance needs both a Power Apps Premium licence and a Microsoft Copilot licence. The guide does not say how this applies inside Dynamics 365 apps.","lg":"","lp":""},{"a":"Shared: model-driven apps","n":"Agent feed","t":"B","d":"Central activity feed in the app showing everything agents do, for human-agent collaboration and supervision.","s":"PRV","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Neither licensing guide lists this feature.","lg":"","lp":""},{"a":"Shared: model-driven apps","n":"Power Apps MCP Server","t":"B","d":"Lets agents automate repetitive app tasks, e.g. create Dataverse records from unstructured content with human review and handoff via the agent feed.","s":"PRV","c":"U","x":-1,"ret":false,"cl":"Likely uses Copilot Credits (MCP tools)","ct":"All three licensing guides say usage of business application tools, which can be exposed through MCP servers, consumes Copilot Credits. None names this server specifically.","lg":"","lp":""},{"a":"Shared: model-driven apps","n":"Form fill assistance","t":"C","d":"Suggests and autopopulates field values on forms based on context.","s":"NONE","c":"Q","x":-1,"ret":false,"cl":"Power Apps Premium feature","ct":"Power Platform Licensing Guide p.7, note 7: app skills (form filling, summaries, data exploration, visualization) require Power Apps Premium. Matching these to this feature is by name. The guide does not say whether Dynamics 365 licences cover them inside Dynamics 365 apps.","lg":"","lp":""},{"a":"Shared: model-driven apps","n":"Find data in a view","t":"C","d":"Natural-language search/filter of data in a view.","s":"PRV","c":"Q","x":-1,"ret":false,"cl":"Power Apps Premium feature","ct":"Power Platform Licensing Guide p.7, note 7: app skills (form filling, summaries, data exploration, visualization) require Power Apps Premium. Matching these to this feature is by name. The guide does not say whether Dynamics 365 licences cover them inside Dynamics 365 apps.","lg":"","lp":""},{"a":"Shared: model-driven apps","n":"Visualize data in a view","t":"C","d":"Turns the data in a view into an interactive chart.","s":"PRV","c":"Q","x":-1,"ret":false,"cl":"Power Apps Premium feature","ct":"Power Platform Licensing Guide p.7, note 7: app skills (form filling, summaries, data exploration, visualization) require Power Apps Premium. Matching these to this feature is by name. The guide does not say whether Dynamics 365 licences cover them inside Dynamics 365 apps.","lg":"","lp":""},{"a":"Shared: model-driven apps","n":"Row summary","t":"C","d":"AI-generated short summaries of selected records without opening them.","s":"NONE","c":"Q","x":-1,"ret":false,"cl":"Power Apps Premium feature","ct":"Power Platform Licensing Guide p.7, note 7: app skills (form filling, summaries, data exploration, visualization) require Power Apps Premium. Matching these to this feature is by name. The guide does not say whether Dynamics 365 licences cover them inside Dynamics 365 apps.","lg":"","lp":""},{"a":"Shared: model-driven apps","n":"Timeline highlights","t":"C","d":"AI-generated bullet list at the top of a timeline summarising key activities.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Shared: finance and operations","n":"Generative help and guidance","t":"C","d":"Conversational sidecar where users ask how-to questions in the app.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Shared: finance and operations","n":"Workflow history summary","t":"C","d":"AI summary of the workflow history shown on the Workflow history page.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Shared: finance and operations","n":"Enhanced user feedback for Copilot and related experiences","t":"B","d":"Thumbs up/down feedback buttons to send product feedback to Microsoft.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Neither licensing guide lists this feature.","lg":"","lp":""},{"a":"Shared: finance and operations","n":"Chat with finance and operations data","t":"C","d":"Ask an agent questions answered from the structured finance and operations data the user can access.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Shared: finance and operations","n":"Immersive Home","t":"B","d":"New workspace that helps users work with AI agents and focus on the most important work items.","s":"PRP","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Neither licensing guide lists this feature.","lg":"","lp":""},{"a":"Shared: finance and operations","n":"Use Model Context Protocol for finance and operations apps (Dynamics 365 ERP MCP server)","t":"B","d":"MCP server giving agents dynamic access to data operations and business logic of finance and operations apps without custom code, connectors or APIs.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"Likely uses Copilot Credits (MCP tools)","ct":"All three licensing guides say usage of business application tools, which can be exposed through MCP servers, consumes Copilot Credits. None names this server specifically.","lg":"","lp":""},{"a":"Shared: finance and operations","n":"Build an agent with Dynamics 365 ERP MCP","t":"B","d":"Developers build agents on the ERP MCP server that can do almost anything a user can in the app UI.","s":"PRP","c":"U","x":-1,"ret":false,"cl":"Likely uses Copilot Credits (MCP tools)","ct":"All three licensing guides say usage of business application tools, which can be exposed through MCP servers, consumes Copilot Credits. None names this server specifically.","lg":"","lp":""},{"a":"Business Central","n":"AI-powered item marketing text","t":"C","d":"Generates product marketing text for items sold in online shops such as Shopify.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Analyze data in lists","t":"C","d":"Describe the layout you want in natural language and get a suggested list layout; can add fields from related tables.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Autofill fields with Copilot","t":"C","d":"Fills blank editable fields using BC data, AI generation or web information.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Chat with Copilot about business data","t":"C","d":"Ask questions answered from the Business Central data the user can access.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Map e-documents to purchase order lines","t":"C","d":"Improves matching of vendor invoice lines to purchase order lines.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Reconcile bank accounts","t":"C","d":"AI-assisted matching of unmatched bank transactions by date, amount and description.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Suggest lines on sales documents","t":"C","d":"Suggests lines on sales quotes, orders and invoices from structured or natural-language input.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Suggest substitute items","t":"C","d":"Finds similar items when the requested item is out of stock.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Suggest number series","t":"C","d":"AI-assisted generation of number series for documents and records.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Summarize records","t":"C","d":"Two or three bullet summary of a record such as customer, item or sales order.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included with Essentials and Premium","ct":"Licensing Guide p.10. Team Members is not mentioned. Other AI features get 30 minutes per tenant of Azure AI.","lg":"","lp":""},{"a":"Business Central","n":"Sales Order Agent","t":"A","d":"Captures sales orders from customer emails and finds the customer in Business Central.","s":"GA","c":"U","x":16,"ret":false,"cl":"","ct":"","lg":"Named in the main agent sections of the Dynamics 365 Licensing Guide. Credits: Business Central agents require Copilot Credits and none are included with Essentials or Premium (Licensing Guide pp.8, 11).","lp":"M"},{"a":"Business Central","n":"Payables Agent","t":"A","d":"Monitors mailboxes for vendor invoices, analyses them and shows invoice drafts to a supervisor for review.","s":"GA","c":"U","x":17,"ret":false,"cl":"","ct":"","lg":"Named in the main agent sections of the Dynamics 365 Licensing Guide. Credits: Business Central agents require Copilot Credits and none are included with Essentials or Premium (Licensing Guide pp.8, 11).","lp":"M"},{"a":"Commerce","n":"Customer insights by Copilot","t":"C","d":"Store associates get Copilot insights to personalise customer interactions.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Commerce","n":"Product insights by Copilot","t":"C","d":"Store associates get Copilot-generated product insights in the Store Commerce app.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Commerce","n":"Store report insights by Copilot","t":"C","d":"Natural-language summaries of store reports in the Store Commerce app.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Commerce","n":"Copilot summaries for statement posting","t":"C","d":"Status and Risks summary of calculated/posted statements and transactions from the last seven days, on Store financials workspace and Statements pages.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Commerce","n":"Copilot in site builder to enrich product detail pages","t":"C","d":"Generates product enrichment and marketing content tailored to audience and brand tone.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Commerce","n":"Copilot-based merchandising insights","t":"C","d":"Summary of insights on merchandising configurations of retail channels.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Customer Insights - Data","n":"Dialog with data","t":"C","d":"Ask natural-language questions to get insights about customers.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Customer Insights - Data","n":"Answers to capability questions","t":"C","d":"Answers questions about Customer Insights - Data and its features.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Customer Insights - Data","n":"Segment creation","t":"C","d":"Creates segments from everyday words without schema knowledge.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Customer Insights - Journeys","n":"Set up proactive outreach (conversational journeys)","t":"A","d":"Combines Customer Insights - Journeys, Contact Center and Copilot Studio agents for customer experiences at scale.","s":"NONE","c":"L","x":13,"ret":false,"cl":"","ct":"","lg":"Not named separately in the Dynamics 365 Licensing Guide. Credits: Customer Insights is not in the guide's credit entitlement table. The proactive outreach scenario also needs Contact Center, whose credits are sold separately (Licensing Guide pp.21, 63).","lp":"N"},{"a":"Customer Insights - Journeys","n":"Create journeys","t":"C","d":"Builds real-time journeys from goals described in natural language.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Customer Insights - Journeys","n":"Target the right customers","t":"C","d":"Creates journey segments from criteria described in natural language (query assist).","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Customer Insights - Journeys","n":"Create emails","t":"C","d":"Generates email content from key points or a topic in a chosen tone.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Customer Insights - Journeys","n":"Recommend images","t":"C","d":"Recommends images that fit the written and visual context of a message.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Customer Insights - Journeys","n":"Rewrite and improve content","t":"C","d":"Polishes and improves content.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Ask a question","t":"C","d":"Copilot side panel answers questions about your data.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Auto prompts","t":"C","d":"Suggests prompts based on the active case or conversation.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Proactive prompts","t":"C","d":"Suggests prompts without typing, to prioritise cases and solve queries.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Summarize conversations","t":"C","d":"Summarises chat and transcribed voice conversations.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Copilot-generated case summaries","t":"C","d":"Case summaries to understand context and resolve faster.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Summarize a case (non-Microsoft CRM)","t":"C","d":"Summarises a case from fields and activities in non-Microsoft CRM systems.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Draft emails","t":"C","d":"Drafts emails from instructions or predefined prompts in the email editor.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Chat with case data","t":"C","d":"Conversation with case data using Microsoft 365 Copilot.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Generate resolution notes","t":"C","d":"Creates resolution notes from case details, emails and notes.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Generate knowledge draft","t":"C","d":"Creates a knowledge draft when a case is resolved and a knowledge article is proposed.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Customer Service Enterprise (not Professional)","ct":"Licensing Guide pp.27 and 29. That line covers Customer Service licences. The guide does not say how it applies to Contact Center licences.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Copilot analytics report","t":"B","d":"Report for supervisors showing Copilot's effect on service operations.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Neither licensing guide lists this feature.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Case Management Agent","t":"A","d":"Automates the case lifecycle: create, update, resolve, close.","s":"NONE","c":"U","x":7,"ret":false,"cl":"","ct":"","lg":"Named in the main agent sections of the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Customer Service Premium only. Professional and Enterprise: sold separately (Licensing Guide pp.29, 63).","lp":"M"},{"a":"Customer Service / Contact Center","n":"Customer Knowledge Management Agent","t":"A","d":"Extracts knowledge from closed cases, fills knowledge gaps and checks compliance.","s":"NONE","c":"U","x":8,"ret":false,"cl":"","ct":"","lg":"Named in the main agent sections of the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Customer Service Premium only. Professional and Enterprise: sold separately (Licensing Guide pp.29, 63).","lp":"M"},{"a":"Customer Service / Contact Center","n":"Quality Evaluation Agent","t":"A","d":"Autonomous and AI-assisted assessment of cases and conversations using a supervisor-defined framework.","s":"NONE","c":"U","x":9,"ret":false,"cl":"","ct":"","lg":"Named in the main agent sections of the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Customer Service Premium only. Professional and Enterprise: sold separately (Licensing Guide pp.29, 63).","lp":"M"},{"a":"Customer Service / Contact Center","n":"Customer Intent Agent","t":"A","d":"Identifies common customer intents and suggests new ones.","s":"NONE","c":"U","x":10,"ret":false,"cl":"","ct":"","lg":"Named in the main agent sections of the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Customer Service Premium only. Professional and Enterprise: sold separately (Licensing Guide pp.29, 63).","lp":"M"},{"a":"Customer Service / Contact Center","n":"Customer Intent Agent for voice","t":"A","d":"Autonomously discovers intents in Contact Center for voice/self-service scenarios.","s":"NONE","c":"U","x":11,"ret":false,"cl":"","ct":"","lg":"Not named separately in the Dynamics 365 Licensing Guide. Credits: not included with any Contact Center licence (Digital, Voice or both). Sold separately (Licensing Guide pp.21, 63).","lp":"N"},{"a":"Customer Service / Contact Center","n":"Intent-driven routing","t":"B","d":"Routes conversations to suitable representatives based on captured customer intent.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Neither licensing guide lists this feature.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Rollout manager","t":"B","d":"Helps admins and supervisors adopt autonomous agents in phases.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Neither licensing guide lists this feature.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Agent insights dashboard","t":"B","d":"Real-time KPIs and trends on AI agent performance for supervisors.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Neither licensing guide lists this feature.","lg":"","lp":""},{"a":"Field Service","n":"Natural language questions","t":"C","d":"Ask questions about system data, with a library of predefined prompts.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included in the Field Service licence (not Contractor)","ct":"Licensing Guide p.34: AI assistance for work orders, scheduling and summaries.","lg":"","lp":""},{"a":"Field Service","n":"Work order update","t":"C","d":"Update work order fields (status, times, tasks, line items) by text or speech in the mobile app.","s":"PRV","c":"I","x":-1,"ret":false,"cl":"Included in the Field Service licence (not Contractor)","ct":"Licensing Guide p.34: AI assistance for work orders, scheduling and summaries.","lg":"","lp":""},{"a":"Field Service","n":"Work order summaries","t":"C","d":"On-demand summary of status, priority, activities and next actions.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included in the Field Service licence (not Contractor)","ct":"Licensing Guide p.34: AI assistance for work orders, scheduling and summaries.","lg":"","lp":""},{"a":"Field Service","n":"Inspection template creation","t":"C","d":"Converts uploaded PDFs/images into draft inspection templates.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included in the Field Service licence (not Contractor)","ct":"Licensing Guide p.34: AI assistance for work orders, scheduling and summaries.","lg":"","lp":""},{"a":"Field Service","n":"Scheduling Operations Agent","t":"A","d":"Optimises resource schedules interactively or in batches with custom goals; handles cancellations, delays, availability changes.","s":"PRV","c":"U","x":12,"ret":false,"cl":"","ct":"","lg":"Listed in Appendix B as Paid Public Preview (pp.77-79). Microsoft may change pricing and business models before it reaches GA. Credits: Field Service is not in the guide's credit entitlement table, so no included credits are stated (Licensing Guide p.63).","lp":"P"},{"a":"Finance","n":"Collections coordinator summary","t":"C","d":"AI summary in Collections coordinator workspace and AI text in reminder letters.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Finance and Finance Premium list AI capabilities as included","ct":"Licensing Guide pp.37-38 list \"AI capabilities within Dynamics 365 Finance\" under both Finance and Finance Premium. The guide does not name individual features.","lg":"","lp":""},{"a":"Finance","n":"Customer page summary","t":"C","d":"AI summary at the top of the customer page.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Finance and Finance Premium list AI capabilities as included","ct":"Licensing Guide pp.37-38 list \"AI capabilities within Dynamics 365 Finance\" under both Finance and Finance Premium. The guide does not name individual features.","lg":"","lp":""},{"a":"Finance","n":"Agent management","t":"B","d":"Lets users discover, configure and manage autonomous agents in finance and operations apps.","s":"PRP","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Neither licensing guide lists this feature.","lg":"","lp":""},{"a":"Finance","n":"Account Reconciliation Agent","t":"A","d":"Proactively spots subledger vs general ledger differences, proposes options and resolves them.","s":"PRP","c":"Q","x":14,"ret":false,"cl":"","ct":"","lg":"Listed in Appendix B as Paid Public Preview (pp.77-79). Microsoft may change pricing and business models before it reaches GA. Credits: 1,000 per user per month are included with Finance Premium. Finance (non-Premium): sold separately (Licensing Guide pp.35, 63).","lp":"P"},{"a":"Sales","n":"Record summarization","t":"C","d":"Summary of leads, opportunities and accounts.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Sales Enterprise (not Professional)","ct":"Licensing Guide pp.47 and 52: Copilot capabilities are shown for Enterprise, Premium and Relationship Sales, not Professional.","lg":"","lp":""},{"a":"Sales","n":"Embedded experiences","t":"C","d":"AI summaries and insights inside lead and opportunity forms.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Sales Enterprise (not Professional)","ct":"Licensing Guide pp.47 and 52: Copilot capabilities are shown for Enterprise, Premium and Relationship Sales, not Professional.","lg":"","lp":""},{"a":"Sales","n":"Recent changes to records","t":"C","d":"Highlights recent updates to sales records.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Sales Enterprise (not Professional)","ct":"Licensing Guide pp.47 and 52: Copilot capabilities are shown for Enterprise, Premium and Relationship Sales, not Professional.","lg":"","lp":""},{"a":"Sales","n":"Information assistance","t":"C","d":"Content recommendations and answers from SharePoint documents.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Sales Enterprise (not Professional)","ct":"Licensing Guide pp.47 and 52: Copilot capabilities are shown for Enterprise, Premium and Relationship Sales, not Professional.","lg":"","lp":""},{"a":"Sales","n":"Meeting preparation","t":"C","d":"Summarises opportunity information for upcoming meetings.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Sales Enterprise (not Professional)","ct":"Licensing Guide pp.47 and 52: Copilot capabilities are shown for Enterprise, Premium and Relationship Sales, not Professional.","lg":"","lp":""},{"a":"Sales","n":"Email assistance","t":"C","d":"Helps compose emails and summarise email threads for notes.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Sales Enterprise (not Professional)","ct":"Licensing Guide pp.47 and 52: Copilot capabilities are shown for Enterprise, Premium and Relationship Sales, not Professional.","lg":"","lp":""},{"a":"Sales","n":"News updates","t":"C","d":"Summarises news about customers and prospects.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Sales Enterprise (not Professional)","ct":"Licensing Guide pp.47 and 52: Copilot capabilities are shown for Enterprise, Premium and Relationship Sales, not Professional.","lg":"","lp":""},{"a":"Sales","n":"Sales Qualification Agent","t":"A","d":"Autonomously researches and qualifies leads, sends outreach emails and engages leads.","s":"NONE","c":"U","x":0,"ret":false,"cl":"","ct":"","lg":"Named in the main agent sections of the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Sales Premium only. Sales Professional and Enterprise: sold separately. Relationship Sales: agents not included (Licensing Guide pp.52, 63).","lp":"M"},{"a":"Sales","n":"Sales Opportunity Agent","t":"A","d":"Researches opportunities, surfaces risks and promising opportunities.","s":"NONE","c":"U","x":1,"ret":false,"cl":"","ct":"","lg":"Named in the main agent sections of the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Sales Premium only. Sales Professional and Enterprise: sold separately. Relationship Sales: agents not included (Licensing Guide pp.52, 63).","lp":"M"},{"a":"Sales","n":"Sales Close Agent","t":"A","d":"Runs the sales cycle end to end autonomously, engaging customers and driving closure.","s":"PRP","c":"U","x":2,"ret":true,"cl":"","ct":"","lg":"Listed in Appendix B as Paid Public Preview (pp.77-79). Microsoft may change pricing and business models before it reaches GA. Credits: 1,000 per user per month are included with Sales Premium only. Sales Professional and Enterprise: sold separately. Relationship Sales: agents not included (Licensing Guide pp.52, 63).","lp":"P"},{"a":"Sales","n":"Sales Research Agent","t":"A","d":"Natural-language dialog with sales data for complex business questions.","s":"NONE","c":"U","x":3,"ret":false,"cl":"","ct":"","lg":"Named in the main agent sections of the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Sales Premium only. Sales Professional and Enterprise: sold separately. Relationship Sales: agents not included (Licensing Guide pp.52, 63).","lp":"M"},{"a":"Sales","n":"Recommended Actions Agent","t":"A","d":"Prioritised actions for sellers on their opportunities.","s":"NONE","c":"U","x":4,"ret":false,"cl":"","ct":"","lg":"Not named separately in the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Sales Premium only. Sales Professional and Enterprise: sold separately. Relationship Sales: agents not included (Licensing Guide pp.52, 63).","lp":"N"},{"a":"Sales","n":"Sales agent in Microsoft 365 Copilot","t":"A","d":"Conversational agent in M365 Copilot to search, synthesise and act on sales data.","s":"NONE","c":"L","x":5,"ret":false,"cl":"","ct":"","lg":"Not named separately in the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Sales Premium only. Sales Professional and Enterprise: sold separately. Relationship Sales: agents not included (Licensing Guide pp.52, 63).","lp":"N"},{"a":"Sales","n":"AI-powered Data Enrichment","t":"B","d":"Enriches opportunity data from email interactions.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"Sales Premium only; uses credits for matching plus enrichment","ct":"Licensing Guide p.52, note 7: credits are consumed when it does both opportunity matching and opportunity enrichment. Shown only in the Premium column.","lg":"","lp":""},{"a":"Project Operations","n":"Copilot in time entry","t":"C","d":"Streamlines logging weekly time entries.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Project Operations","n":"Copilot for project","t":"C","d":"Generates a preliminary work breakdown structure from a project name and description.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Project Operations","n":"Time Entry Agent","t":"A","d":"Auto-generates draft time entries from assignments, bookings and history.","s":"PRP","c":"Q","x":19,"ret":false,"cl":"","ct":"","lg":"Listed in Appendix B as Paid Public Preview (pp.77-79). Microsoft may change pricing and business models before it reaches GA. Credits: Project Operations is not in the guide's credit entitlement table, so no included credits are stated (Licensing Guide p.63).","lp":"P"},{"a":"Project Operations","n":"Expense Agent","t":"A","d":"Extracts receipt data, creates and groups expense entries into reports.","s":"PRP","c":"L","x":20,"ret":false,"cl":"","ct":"","lg":"Listed in Appendix B as Paid Public Preview (pp.77-79). Microsoft may change pricing and business models before it reaches GA. Credits: Project Operations is not in the guide's credit entitlement table, so no included credits are stated (Licensing Guide p.63). The guide also lists an Expense Copilot Automation security role that lets the Copilot extract, categorise and submit expenses on behalf of users (p.43).","lp":"P"},{"a":"Project Operations","n":"Approvals Agent","t":"A","d":"Reviews time, expense and material entries against uploaded policy documents (Copilot Studio agent) and marks Ready for approval or Needs review.","s":"PRP","c":"Q","x":21,"ret":false,"cl":"","ct":"","lg":"Listed in Appendix B as Paid Public Preview (pp.77-79). Microsoft may change pricing and business models before it reaches GA. Credits: Project Operations is not in the guide's credit entitlement table, so no included credits are stated (Licensing Guide p.63).","lp":"P"},{"a":"Supply Chain Management","n":"AI summaries with Copilot","t":"C","d":"Page-level summaries personalised to the user.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Supply Chain Management","n":"Analyze demand plans with Copilot","t":"C","d":"Predefined questions analysing demand plan shifts, trends, anomalies, accuracy.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Supply Chain Management","n":"Workload insights with Copilot","t":"C","d":"Insights on work headers, pick/receiving lines, workforce and pending warehouse work in the Warehouse Management mobile app.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"The Dynamics 365 and Power Platform guides list no assistant features for this area.","lg":"","lp":""},{"a":"Supply Chain Management","n":"Supplier Communications Agent","t":"A","d":"Automates vendor follow-ups, purchase order updates and change requests by user-defined rules.","s":"PRP","c":"Q","x":15,"ret":false,"cl":"","ct":"","lg":"Listed in Appendix B as Paid Public Preview (pp.77-79). Microsoft may change pricing and business models before it reaches GA. The guide names the Procurement Agent, which includes supplier communications. Credits: 1,000 per user per month are included with Supply Chain Management Premium. Non-Premium: sold separately (Licensing Guide p.63).","lp":"P"},{"a":"Sustainability Manager","n":"Analyze documents with Copilot","t":"C","d":"Upload ESG documents and ask questions about them.","s":"PRV","c":"I","x":-1,"ret":false,"cl":"Listed as a preview entitlement","ct":"Licensing Guide p.60 lists Copilot in Sustainability Manager (preview). Which tier it belongs to is not clear from the table. The guide also says certain Sustainability features require Copilot Credits and other Microsoft licences (p.62).","lg":"","lp":""},{"a":"Sustainability Manager","n":"Create calculation models with Copilot","t":"C","d":"Describe a calculation model and Copilot generates it.","s":"PRV","c":"I","x":-1,"ret":false,"cl":"Listed as a preview entitlement","ct":"Licensing Guide p.60 lists Copilot in Sustainability Manager (preview). Which tier it belongs to is not clear from the table. The guide also says certain Sustainability features require Copilot Credits and other Microsoft licences (p.62).","lg":"","lp":""},{"a":"Sustainability Manager","n":"Generate reports with Copilot","t":"C","d":"Generate emissions or CSRD reports from the Copilot side pane.","s":"PRV","c":"I","x":-1,"ret":false,"cl":"Listed as a preview entitlement","ct":"Licensing Guide p.60 lists Copilot in Sustainability Manager (preview). Which tier it belongs to is not clear from the table. The guide also says certain Sustainability features require Copilot Credits and other Microsoft licences (p.62).","lg":"","lp":""},{"a":"Sustainability Manager","n":"Query data with Copilot","t":"C","d":"Ask questions about organisational data from the Copilot side pane.","s":"PRV","c":"I","x":-1,"ret":false,"cl":"Listed as a preview entitlement","ct":"Licensing Guide p.60 lists Copilot in Sustainability Manager (preview). Which tier it belongs to is not clear from the table. The guide also says certain Sustainability features require Copilot Credits and other Microsoft licences (p.62).","lg":"","lp":""},{"a":"Sustainability Manager","n":"Find facts with Copilot","t":"C","d":"Drafts responses for ESG disclosures from uploaded documents.","s":"PRV","c":"I","x":-1,"ret":false,"cl":"Listed as a preview entitlement","ct":"Licensing Guide p.60 lists Copilot in Sustainability Manager (preview). Which tier it belongs to is not clear from the table. The guide also says certain Sustainability features require Copilot Credits and other Microsoft licences (p.62).","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"View email summary (Outlook)","t":"C","d":"Email summary enriched with CRM sales insights.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"Draft email responses (Outlook)","t":"C","d":"Email drafts including CRM sales insights.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"View opportunity summary (Outlook)","t":"C","d":"CRM context such as customer questions and team notes.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"View customer communication (Outlook)","t":"C","d":"Chronological view of interactions incl. meetings.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"View opportunity insights (Outlook)","t":"C","d":"Consolidated opportunity meetings, risks and next actions.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"View insights from partner applications (Outlook)","t":"C","d":"Shows related records/activities from partner apps within the Sales agent.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"Share insights from Outlook to Teams","t":"C","d":"Share Sales agent email insights into Teams chats, meetings or channels.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"Meeting preparation card (Teams)","t":"C","d":"Latest opportunity insights from emails, meetings and CRM.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"View daily summary of upcoming meetings (Teams)","t":"C","d":"One notification summarising the next five sales meetings.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"View sales insights in Teams meeting recap","t":"C","d":"Meeting insights and recaps for sellers.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"Create Planner tasks (Teams)","t":"C","d":"Captures tasks discussed in conversations.","s":"NONE","c":"M","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"Work with Lead Research and Outreach (cross-app)","t":"C","d":"Overview of research on leads: company, news, outreach hints.","s":"PRV","c":"U","x":6,"ret":false,"cl":"","ct":"","lg":"Not named separately in the Dynamics 365 Licensing Guide. Credits: 1,000 per user per month are included with Sales Premium only. Sales Professional and Enterprise: sold separately. Relationship Sales: agents not included (Licensing Guide pp.52, 63).","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"View case summary (Outlook)","t":"C","d":"AI case summary inside Outlook.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"Get key email information and draft replies (Outlook)","t":"C","d":"Reply suggestions and email context enriched with CRM case data.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"Save emails and meetings (Outlook)","t":"C","d":"Saves Outlook interactions into the CRM.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"View a case summary (Teams)","t":"C","d":"AI case summary in Teams.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"Chat with Service data in Microsoft Copilot (Teams)","t":"C","d":"Natural-language retrieval of cases, CRM records and knowledge in Teams.","s":"PRV","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"View and update CRM records (Teams)","t":"C","d":"View and update CRM data from Teams.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"Ask a question (cross-app)","t":"C","d":"Answers questions and summarises cases without searching.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"Generate case summary (cross-app)","t":"C","d":"Auto-generates case summaries from emails, conversations and CRM data.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"Generate case resolution notes (cross-app)","t":"C","d":"Resolution notes from case details, emails and notes.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"Generate conversation summary (cross-app)","t":"C","d":"AI summary of customer calls or chats.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Service in Microsoft 365 Copilot","n":"Write an email (cross-app)","t":"C","d":"Context-aware customer email drafts from case or conversation.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"","ct":"","lg":"","lp":""},{"a":"Business Central","n":"Expense Agent","t":"A","d":"Employees upload or email receipt photos or PDFs; the agent reads them, categorises them and builds draft expense reports (also mileage, per diem and travel requests) for review and approval. Nothing is posted without human approval.","s":"PRP","c":"U","x":18,"ret":false,"cl":"","ct":"","lg":"Listed in Appendix B as Paid Public Preview (pp.77-79). Microsoft may change pricing and business models before it reaches GA. Credits: Business Central agents require Copilot Credits and none are included with Essentials or Premium (Licensing Guide pp.8, 11).","lp":"P"},{"a":"Sales","n":"Conversation Intelligence, Sales Accelerator and lead and opportunity scoring","t":"C","d":"Sales Premium features that use automation and AI to help sellers prioritise their worklist, analyse calls in real time, automate action notifications and generate meeting summaries.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Selected features in Sales Enterprise (capped); full in Premium","ct":"Licensing Guide pp.48 and 51: Enterprise gets unlimited Conversation Intelligence, Sales Accelerator for up to 1,500 records a month per environment, and scoring for up to 1,500 records a month per environment. Premium has the full features. Not in Professional.","lg":"","lp":""},{"a":"Sales","n":"Assistant cards, email engagement and auto capture of Outlook activity","t":"C","d":"Sales Premium automation and AI offerings that are included in Sales Enterprise. The guide lists them by name without describing each.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Sales Enterprise (not Professional)","ct":"Licensing Guide pp.48 and 51.","lg":"","lp":""},{"a":"Sales","n":"Sales Insights: pipeline intelligence, notes analysis, relationship analytics, connection insights","t":"C","d":"Sales Insights adds predictive scoring and forecasting, pipeline intelligence, notes analysis, relationship analytics, connection insights, assistant studio and a business card reader (200 a user a month).","s":"NONE","c":"L","x":-1,"ret":false,"cl":"Sales Premium, or an add-on for Enterprise (not Professional)","ct":"Licensing Guide p.48: Sales Insights is part of Sales Premium and can be added to Sales Enterprise or Relationship Sales. Sales Professional users are not entitled.","lg":"","lp":""},{"a":"Sales in Microsoft 365 Copilot","n":"Microsoft Sales Copilot (formerly Viva Sales)","t":"C","d":"The guide lists it by name only, as included with Sales Enterprise and Premium. Its change log says Copilot for Sales and Copilot for Service are now included in Microsoft 365 Copilot.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included from Sales Enterprise (not Professional)","ct":"Licensing Guide p.51 (table) and change log.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Customer Assist Agent","t":"A","d":"Combines autonomous self-service with real-time help for service representatives: it understands customer intents, resolves issues, assists reps during live interactions and proactively contacts customers.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"","ct":"","lg":"Named in the Contact Center agent list. Credits: not included with any Contact Center licence (Licensing Guide pp.18, 21, 63). Customer Service Premium includes Contact Center Digital + Voice and 1,000 credits per user per month (p.26).","lp":"M"},{"a":"Customer Service / Contact Center","n":"Quality Assurance Agent","t":"A","d":"Assesses conversations and gives quality scores and detailed evaluation insights so supervisors can act.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"","ct":"","lg":"Named in the Contact Center agent list. Credits: not included with any Contact Center licence (Licensing Guide pp.18, 21, 63).","lp":"M"},{"a":"Customer Service / Contact Center","n":"Service Operations Agent","t":"A","d":"A self-service agent that supports configuring, governing and optimising the contact center: it provisions components, configures settings in natural language and orchestrates conversations in real time.","s":"PRV","c":"U","x":-1,"ret":false,"cl":"","ct":"","lg":"Listed in Appendix B as Paid Public Preview (p.77). Microsoft may change pricing and business models before GA. Credits: not included with any Contact Center licence (p.63).","lp":"P"},{"a":"Customer Service / Contact Center","n":"Customer Service Insights (topic clustering)","t":"C","d":"Integrated analytics and AI that help you understand support engagements and emerging trends. Topic clustering groups related cases so people can find answers in the knowledge base.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included in Customer Service Enterprise","ct":"Licensing Guide p.26.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Call intelligence","t":"C","d":"Call transcription, sentiment analysis, AI suggestions, call insights and topic clustering for phone calls.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Contact Center Voice: 6,000 minutes per user per month","ct":"Licensing Guide pp.19 and 21: included with Voice and Digital + Voice, not with Digital alone. Additional minutes are sold as an add-on.","lg":"","lp":""},{"a":"Customer Service / Contact Center","n":"Intelligent voicebot (IVR)","t":"S","d":"A conversational IVR bot for phone calls, authored in Copilot Studio.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Contact Center Voice: 2,000 minutes per user per month; generative AI needs credits","ct":"Licensing Guide pp.19 and 21: any generative AI capabilities require Copilot Credits, purchased separately.","lg":"","lp":""},{"a":"Customer Insights - Journeys","n":"Journey Creation Agent","t":"A","d":"Builds a customer journey (flow, timing and branching) from a marketing goal you describe in plain language.","s":"PRV","c":"Q","x":-1,"ret":false,"cl":"Cost not stated; preview pricing can change","ct":"Licensing Guide pp.77-78: Paid Public Preview. Customer Insights is not in the guide's credit entitlement table.","lg":"Listed in Appendix B as Paid Public Preview. Microsoft may change pricing and business models before GA. Customer Insights is not in the credit entitlement table (p.63).","lp":"P"},{"a":"Customer Insights - Journeys","n":"Outreach Optimization Agent","t":"A","d":"Picks high-engagement send times for marketing emails from past engagement data, honouring quiet time and contact consent. Without history it uses a generic fallback.","s":"PRV","c":"Q","x":-1,"ret":false,"cl":"Cost not stated; preview pricing can change","ct":"Licensing Guide pp.77-78: Paid Public Preview. Customer Insights is not in the guide's credit entitlement table.","lg":"Listed in Appendix B as Paid Public Preview. Microsoft may change pricing and business models before GA. Customer Insights is not in the credit entitlement table (p.63).","lp":"P"},{"a":"Business Central","n":"AI forecasting and prediction","t":"C","d":"Cash flow forecast, late payment prediction, image recognition, inventory forecast and sales forecast.","s":"NONE","c":"L","x":-1,"ret":false,"cl":"Needs an Azure Machine Learning subscription","ct":"Licensing Guide p.9: listed under Artificial Intelligence with the note that it requires an Intelligent Edge or Azure Machine Learning subscription.","lg":"","lp":""},{"a":"Finance","n":"AI capabilities within Dynamics 365 Finance","t":"C","d":"The guide lists this as an included entitlement and names no individual features.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included in Finance and Finance Premium","ct":"Licensing Guide pp.37-38.","lg":"","lp":""},{"a":"Sustainability Manager","n":"Advanced AI capabilities: Intelligent Insights","t":"C","d":"Listed as an advanced AI capability. The guide gives no description.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Sustainability Premium only","ct":"Licensing Guide p.62: shown only in the Premium column.","lg":"","lp":""},{"a":"Intelligent Order Management","n":"AI rules-based fulfilment","t":"B","d":"Order fulfilment driven by AI rules, including anomaly detection and inventory reallocation.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Included in the licence (per tenant, 1,000 order lines)","ct":"Licensing Guide p.42.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Agents and workflows (GitHub Copilot harness)","t":"S","d":"Build agents and workflows that automate end-to-end business processes, using natural language or a graphical interface.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"Credits to build and to run","ct":"Copilot Studio Licensing Guide pp.4-5 and 7: credits are used during creation and at runtime.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Apps built in Copilot Studio","t":"S","d":"Build custom apps with natural language and publish them to the Copilot Managed Runtime host.","s":"PRV","c":"U","x":-1,"ret":false,"cl":"Credits to build; hosting included with Power Apps Premium up to limits","ct":"Copilot Studio guide pp.7-8 and Power Platform guide p.7: beyond the request limits it costs 0.1 credits per API call. Paid public preview, so pricing can change before GA.","lg":"","lp":"P"},{"a":"Copilot Studio and Power Platform","n":"Customer-facing agents (Customer conversation harness)","t":"S","d":"Build agents that answer questions, complete tasks and give support across voice and chat.","s":"PRV","c":"U","x":-1,"ret":false,"cl":"Credits at runtime","ct":"Copilot Studio guide p.5. Labelled Public Preview.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Rule-based agents and agent flows (Standard harness)","t":"S","d":"Build conversational agents with predefined topics and flows, plus agent flows.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"Credits by features used; fair-use limits with a Microsoft Copilot licence","ct":"Copilot Studio guide pp.6-7: runtime needs credits, except that employees with a Microsoft Copilot licence get fair usage limits in Microsoft channels.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Voice agents","t":"S","d":"Agents that handle phone calls.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"Credits by call length","ct":"Copilot Studio guide p.7, note 3: billed by total call length to the nearest second and the voice orchestration used. Your agent research lists 10, 35 and 75 credits per minute for classic, generative and premium generative voice.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Agents that extend Microsoft Copilot","t":"S","d":"Copilot Chat agents that extend Microsoft Copilot with your organisation's knowledge.","s":"NONE","c":"L","x":-1,"ret":false,"cl":"Covered by the Microsoft Copilot licence for employees; extras use credits","ct":"Copilot Studio guide p.7, note 5, and Power Platform guide p.7, note 6.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Extend Dynamics 365 agents","t":"S","d":"Dynamics 365 agents are built with Copilot Studio and can be extended with agent flows, AI tools, custom actions, REST APIs, computer use, tenant graph grounding, autonomous actions and deep reasoning.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"Credits","ct":"Dynamics 365 Licensing Guide pp.63 and 77.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Business application tools (MCP, Work IQ APIs)","t":"B","d":"Tools across Dynamics 365, Power Platform and Dataverse that give Copilot and agents shared context on business data, record relationships and business rules.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"Pay per use (Copilot Credits)","ct":"All three guides say usage consumes Copilot Credits. You also need the Dynamics 365 or Power Platform licences for the underlying data.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Dataverse MCP server","t":"B","d":"Lets MCP-compliant clients reach Dataverse tables and records.","s":"NONE","c":"U","x":-1,"ret":false,"cl":"Likely uses Copilot Credits (MCP tools)","ct":"Power Platform guide p.28 and change log. The guides say business application tools, which can be exposed through MCP servers, consume credits. None names this server specifically.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Dataverse for Copilot Studio","t":"B","d":"The data layer under agents and Power Platform. A tenant gets 15 GB of database, 20 GB of file and 2 GB of log capacity by default.","s":"NONE","c":"I","x":-1,"ret":false,"cl":"Default capacity included; extra storage is paid","ct":"Copilot Studio guide pp.9-10: add-ons are $40 per GB per month for database, $2 for file and $10 for log.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Agent activity map","t":"B","d":"When an agent is tested, shows every trigger, topic, connector and workflow as a visual map of its plan.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Copilot Studio guide p.12.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Usage reports and Copilot Credit Estimator","t":"B","d":"Admins see tenant usage in the Power Platform admin center, and the estimator forecasts an agent's credit use.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Copilot Studio guide pp.12-13. The estimator is guidance only and not a binding offer.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Sharing and publishing controls","t":"B","d":"Limit who can share agents with whom, and switch off publishing of agents that use generative AI.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Copilot Studio guide p.12. Sharing limits are a Managed Environments control, which is included with Copilot Studio licences and pay-as-you-go meters.","lg":"","lp":""},{"a":"Copilot Studio and Power Platform","n":"Data loss prevention for agents","t":"B","d":"Power Platform data loss prevention policies restrict which connectors agents can use and control data movement.","s":"NONE","c":"N","x":-1,"ret":false,"cl":"Not stated in the licensing guides","ct":"Copilot Studio guide p.11.","lg":"","lp":""}],"details":[{"app":"Dynamics 365 Sales","agent":"Sales Qualification Agent","what":"Researches new leads on its own, checks if they fit your ideal customer profile and drafts an outreach email. In 'Research and engage' mode it also sends emails, follows up and hands promising leads to sellers.","status":"Not stated (overview page has no preview or GA banner; no page date visible)","cost":"U","costd":"Uses tenant capacity (prepaid or pay-as-you-go). Billed via Copilot Studio capacity (prepaid message/credit pack or pay-as-you-go linked to Azure subscription; Dynamics 365 Sales environment must be linked to a Power Platform environment). When capacity is depleted the capability stops until more is added. Per-action credit rate for this agent: Not confirmed (billing page says messages per event depend on complexity; see Power Platform Licensing Guide / Copilot Studio agent usage estimator).","src":["https://learn.microsoft.com/en-us/dynamics365/sales/sales-qualification-agent","https://learn.microsoft.com/en-us/dynamics365/sales/copilot-consumption-based-billing"]},{"app":"Dynamics 365 Sales","agent":"Sales Opportunity Agent","what":"Watches open deals, combines CRM, email, meeting and web information, flags risks and shows which deals deserve attention. Previously called Opportunity Research Agent.","status":"Not stated (overview page has no preview or GA banner; no page date visible)","cost":"U","costd":"Initial run processes all open opportunities in scope; later consumption scales with number of opportunities and refresh frequency (narrow scope and refresh schedule to control). Billed via Copilot Studio capacity (prepaid message/credit pack or pay-as-you-go linked to Azure subscription; Dynamics 365 Sales environment must be linked to a Power Platform environment). When capacity is depleted the capability stops until more is added. Per-action credit rate for this agent: Not confirmed (billing page says messages per event depend on complexity; see Power Platform Licensing Guide / Copilot Studio agent usage estimator).","src":["https://learn.microsoft.com/en-us/dynamics365/sales/sales-opportunity-agent","https://learn.microsoft.com/en-us/dynamics365/sales/copilot-consumption-based-billing"]},{"app":"Dynamics 365 Sales","agent":"Sales Close Agent","what":"Automates customer engagement for high-velocity, low-complexity deals: reaches out, answers questions, recommends products and handles objections using playbooks. Being retired.","status":"Production-ready preview. Docs: from 2026-09-30 no new instances can be created; existing instances removed 2026-10-30; replacement is Sales Development agent (Microsoft Agent 365).","cost":"U","costd":"Uses tenant capacity (prepaid or pay-as-you-go). Billed via Copilot Studio capacity (prepaid message/credit pack or pay-as-you-go linked to Azure subscription; Dynamics 365 Sales environment must be linked to a Power Platform environment). When capacity is depleted the capability stops until more is added. Per-action credit rate for this agent: Not confirmed (billing page says messages per event depend on complexity; see Power Platform Licensing Guide / Copilot Studio agent usage estimator). Retirement means it is no longer available as of 2026-11-11 per the page.","src":["https://learn.microsoft.com/en-us/dynamics365/sales/sales-close-agent","https://learn.microsoft.com/en-us/dynamics365/sales/copilot-consumption-based-billing"]},{"app":"Dynamics 365 Sales","agent":"Sales Research Agent","what":"A chat-style research canvas where sales leaders ask business questions in plain language about sales data (Dynamics 365, Fabric Lakehouse, uploaded CSV/Excel/PDF) and get a summary with charts and next steps.","status":"Not confirmed for the agent as a whole (overview snippet has no banner; only Business Function Builder is labelled preview)","cost":"U","costd":"Setup page: needs Copilot Studio capacity ('enough Copilot credits' for the environment); without credits you cannot generate or interact with a blueprint. Users also need proper Dynamics 365 Sales licences and the Sales Research Agent Reader role (default visible only to System Administrator and System Customizer). Per-action credit rate: Not confirmed. Not listed among agents on the consumption-billing page, but setup page states credit requirement.","src":["https://learn.microsoft.com/en-us/dynamics365/sales/sales-research-agent","https://learn.microsoft.com/en-us/dynamics365/sales/configure-sales-research-agent","https://learn.microsoft.com/en-us/dynamics365/sales/use-sales-research-agent"]},{"app":"Dynamics 365 Sales","agent":"Recommended Actions Agent","what":"Gathers suggested actions from other sales agents (and custom agents), ranks them and shows the most important ones as cards on lead, opportunity, contact and account records.","status":"Not stated (no preview or GA banner on overview page; no page date visible)","cost":"U","costd":"Charged per action the prioritization engine processes. Charged for Sales Opportunity Agent, Sales Qualification Agent and custom agent actions; Data Enrichment Agent actions are shown but not charged. Per-action credit rate: Not confirmed. Consumption-billing page lists it as a billable sales agent.","src":["https://learn.microsoft.com/en-us/dynamics365/sales/recommended-actions-overview","https://learn.microsoft.com/en-us/dynamics365/sales/copilot-consumption-based-billing"]},{"app":"Microsoft 365 Copilot / Dynamics 365 Sales","agent":"Sales agent in Microsoft 365 Copilot","what":"Chat assistant in Microsoft 365 Copilot, Outlook and Teams that searches and summarises CRM data (Dynamics 365 Sales or Salesforce), drafts emails and gives meeting insights.","status":"Not stated for the agent itself (Sales agent intro/setup pages show no preview banner; its consumption-billing page is marked preview)","cost":"L","costd":"Dynamics 365 Sales Enterprise, Premium and Relationship Sales licences include the basic features of Sales agent; premium features require a Microsoft 365 Copilot licence. Per FAQ and setup page, users need a Microsoft 365 Copilot licence to access Sales agent. Selected agent capabilities are consumption-billed via Copilot Studio messages (prepaid or pay-as-you-go, production environment) - that page is preview. Credit rates: Not confirmed. Not available in GCC/DoD.","src":["https://learn.microsoft.com/en-us/microsoft-sales-copilot/sales-m365-copilot-faq","https://learn.microsoft.com/en-us/dynamics365/sales/buy-dynamics-365-sales","https://learn.microsoft.com/en-us/microsoft-sales-copilot/manage-consumption-based-billing"]},{"app":"Microsoft 365 Copilot / Dynamics 365 Sales","agent":"Lead Research and Outreach (feature of Sales agent)","what":"Researches leads in advance (company details, news, whether they are a real decision maker) and writes personalised outreach emails for sellers to review.","status":"Preview (docs label it 'preview', prerelease documentation; off by default)","cost":"U","costd":"Prerequisite: message capacity purchased and assigned to the Sales agent environment; production Dataverse environment; Dataverse Search on; may increase Dataverse capacity consumption. Needs Sales agent installed. Per-action credit rate: Not confirmed. Docs point to Sales Development agent (Microsoft Agent 365) as related.","src":["https://learn.microsoft.com/en-us/microsoft-sales-copilot/sales-agent-overview","https://learn.microsoft.com/en-us/microsoft-sales-copilot/set-up-sales-agent"]},{"app":"Customer Service","agent":"Case Management Agent","what":"Automates the life of a support case: creates cases from conversations and emails, fills in case fields, drafts replies to resolve cases, and follows up and closes them.","status":"Not stated on the setup pages read (create/update page and AI overview list it without a GA or preview label); shadow mode inside it is labelled preview; no page date visible","cost":"U","costd":"Needs Copilot Credits via prepaid Copilot Studio credit pack or pay-as-you-go (Azure subscription linked to Power Platform environment). Setup page says it uses the Data Entry Agent in the background and the pay-as-you-go plan mandates an Azure subscription charged when the agent runs; simulations and shadow mode also consume credits. Prerequisites include Contact Center channels for conversation-based case creation, authenticated chat, and Customer Intent Agent for case resolution. Licence requirements for Customer Service itself: see Dynamics 365 Licensing Guide. Per-agent credit rate: Not confirmed (docs point to Copilot Studio billing rates and the agent usage estimator; no agent-specific rate found).","src":["https://learn.microsoft.com/en-us/dynamics365/customer-service/administer/set-up-autonomous-case-agents"]},{"app":"Customer Service","agent":"Customer Knowledge Management Agent","what":"Turns resolved cases and their conversations, emails and notes into draft knowledge articles, checks for duplicates, removes personal data, and can publish or send them for review.","status":"Not stated as GA on the admin page; sub-features labelled preview or production-ready preview (custom record types, automatic article updates); no page date visible","cost":"U","costd":"Needs Copilot Credits via prepaid Copilot Studio credit pack or pay-as-you-go (Azure subscription linked to Power Platform environment). Admin page lists 'set up pay-as-you-go' as a prerequisite, plus Dynamics 365 knowledge management configured, Power Automate flow connections and a published Copilot Studio agent. Per-agent credit rate: Not confirmed (docs point to Copilot Studio billing rates and the agent usage estimator; no agent-specific rate found).","src":["https://learn.microsoft.com/en-us/dynamics365/customer-service/administer/admin-km-agent"]},{"app":"Customer Service / Contact Center","agent":"Quality Evaluation Agent","what":"Automatically scores customer interactions (cases, conversations, emails in preview) against a quality checklist that supervisors define, and produces summaries and recommended actions.","status":"Not stated as GA on the admin page; email evaluation is labelled preview; no page date visible. Note: the agent template page 'Agent for service quality evaluation' says the template is not available yet","cost":"U","costd":"Needs Copilot Credits via prepaid Copilot Studio credit pack or pay-as-you-go (Azure subscription linked to Power Platform environment). Prerequisites: Microsoft Copilot credits set up, Enable AI agents turned on in Power Platform admin center, quality roles assigned, consent to cross-region data movement. A related Quality Assurance Agent page (Contact Center only) also names pay-as-you-go as a prerequisite. Per-agent credit rate: Not confirmed (docs point to Copilot Studio billing rates and the agent usage estimator; no agent-specific rate found).","src":["https://learn.microsoft.com/en-us/dynamics365/contact-center/administer/manage-quality-evaluation-agent"]},{"app":"Customer Service / Contact Center","agent":"Customer Intent Agent","what":"Reads past cases and conversations to discover the common reasons customers contact you (intents), then suggests questions and answers to representatives or lets a Copilot agent handle simple requests itself.","status":"Not stated on the overview and admin pages (no GA or preview label); the related intent-driven routing is labelled production-ready preview; no page date visible","cost":"U","costd":"Needs Copilot Credits via prepaid Copilot Studio credit pack or pay-as-you-go (Azure subscription linked to Power Platform environment). Admin page lists 'set up a pay-as-you-go plan' as a prerequisite and requires Intent Manager and CSR Manager roles. Self-service use needs a Copilot Studio agent (Copilot Studio licensing per Product Terms). Per-agent credit rate: Not confirmed (docs point to Copilot Studio billing rates and the agent usage estimator; no agent-specific rate found).","src":["https://learn.microsoft.com/en-us/dynamics365/contact-center/administer/manage-customer-intent-agent"]},{"app":"Contact Center","agent":"Customer Intent Agent for voice","what":"Same intent discovery, but for phone calls: a voice agent works out why the caller is calling, asks follow-up questions and offers a solution, handing over to a person if needed.","status":"Not stated on the voice setup page (no GA or preview label); no page date visible","cost":"U","costd":"Needs Copilot Credits via prepaid Copilot Studio credit pack or pay-as-you-go (Azure subscription linked to Power Platform environment). Voice setup page prerequisites: Customer Intent Agent enabled and intent library built, a voice-enabled Copilot agent connected to the Contact Center environment, a service principal. Customer Intent Agent admin page requires pay-as-you-go. Copilot Studio voice rates documented separately: Classic voice 10, GenAI voice 35, Premium GenAI voice 75 Copilot Credits per minute (Copilot Studio billing page; whether these apply to this agent is Not confirmed). Voice channel licences: see Dynamics 365 Licensing Guide.","src":["https://learn.microsoft.com/en-us/dynamics365/contact-center/administer/set-up-voice-agents-to-use-intents"]},{"app":"Field Service","agent":"Scheduling Operations Agent","what":"Helps dispatchers re-plan technician schedules automatically, for example filling gaps after cancellations or cutting travel time, either interactively (up to five resources) or in scheduled batches.","status":"Preview (page states 'This is a preview feature' and is prerelease documentation; no date visible; URS version history shows release rollout from March 2025)","cost":"U","costd":"Docs say it uses Copilot Studio credits with consumption-based billing; a single optimization request consumes credits based on the number of resources included. Billing via prepaid Copilot Studio credit packs or pay-as-you-go (Azure subscription); both require linking the Dynamics 365 environment to a Power Platform environment. Other prerequisites: Field Service 8.8.133.214+, URS 3.12.149.15+, location and map settings on. Credit rate per resource: Not confirmed.","src":["https://learn.microsoft.com/en-us/dynamics365/field-service/soa-setup"]},{"app":"Customer Insights - Journeys","agent":"Proactive outreach via conversational journeys (agent-based)","what":"Lets a customer journey place AI-agent phone calls or SMS conversations (built in Copilot Studio, run through Contact Center) to proactively reach customers, for example about a cancelled flight or product recall.","status":"Not stated on the overview page (no GA or preview label); the Contact Center integration is switched on with a feature switch; MMS and WhatsApp proactive engagement are labelled preview; no page date visible","cost":"L","costd":"Documented requirement: you need both Customer Insights - Journeys and Dynamics 365 Contact Center in the same Dataverse environment, plus Copilot Studio for the AI agent; consumption-based Copilot credits to pay for agent usage across voice and digital channels (Contact Center agent integration page). Contact Center licence price and credit rates for this scenario: Not confirmed; see Dynamics 365 Licensing Guide.","src":["https://learn.microsoft.com/en-us/dynamics365/customer-insights/journeys/conversational-journeys-overview"]},{"app":"Finance","agent":"Account Reconciliation Agent","what":"Watches the ledger and subledgers for mismatches (exceptions) and suggests a fix for each one, such as creating a journal entry, reversing, linking transactions or accepting without change. A person reviews and accepts the suggestions.","status":"Production ready preview (page marked prerelease documentation, subject to change; requires Finance 10.0.46 or later). Page date: Not confirmed.","cost":"Q","costd":"Credit rate per action: Not confirmed. Docs state agent management needs Copilot Studio billing enabled in Power Platform admin center with credits assigned to the environment, and that the organisation is billed for each deployed agent. Agent identity users in the System agent security role are exempt from Dynamics 365 finance and operations user licences. Prerequisites: Finance 10.0.46+, features Immersive Home, Agent management and Account reconciliation agent on, Copilot for finance and operations apps and Copilot in Dynamics 365 Finance packages installed, dedicated agent identity user (Dataverse and Finance roles), Move data across regions setting enabled where required.","src":["https://learn.microsoft.com/dynamics365/finance/general-ledger/acct-rec-agent","https://learn.microsoft.com/dynamics365/finance/general-ledger/configure-acct-recon-agent","https://learn.microsoft.com/dynamics365/fin-ops-core/fin-ops/copilot/agent-mgmt","https://learn.microsoft.com/dynamics365/fin-ops-core/dev-itpro/copilot/copilot-mcp"]},{"app":"Supply Chain Management","agent":"Supplier Communications Agent (feature of the Procurement Agent)","what":"Reads vendor emails about purchase orders, tells confirmations from change requests, and lets the buyer apply the changes in one click. It can also draft or send follow-up emails for unconfirmed or delayed purchase orders.","status":"Production-ready preview (pages marked prerelease documentation, subject to change; requires Supply Chain Management 10.0.44 or later). Page date: Not confirmed.","cost":"Q","costd":"Credit rate per action: Not confirmed. Docs state agent management needs Copilot Studio billing enabled with credits assigned to the environment, and that the organisation is billed for each deployed agent. Agent identity user (dedicated Entra user) is exempt from finance and operations user licences when assigned the System agent role. Prerequisites: SCM 10.0.44+, features Immersive Home, Agent management and Procurement Agent - Supplier Communications on, Copilot packages installed, at least one mailbox synced via server-side synchronisation (shared or private). Automatic sending of follow-up emails is an optional separate feature. Not supported yet: splitting lines, changing delivery site, changing vendor.","src":["https://learn.microsoft.com/dynamics365/supply-chain/procurement/procurement-agent-overview","https://learn.microsoft.com/dynamics365/supply-chain/procurement/procurement-agent-supplier-com-setup-wizard","https://learn.microsoft.com/dynamics365/supply-chain/procurement/procurement-agent-supplier-com-overview","https://learn.microsoft.com/dynamics365/copilot/ai-get-started"]},{"app":"Business Central","agent":"Sales Order Agent","what":"Reads customer emails asking for quotes or orders, creates or updates the sales quote or order in Business Central, and drafts a reply email for a person to review before it is sent.","status":"Generally available (Set up Sales Order Agent page says it is listed under Generally available on the Copilot and agent capabilities page). Page date: Not confirmed.","cost":"U","costd":"Per step: analyse incoming email 2 credits (generative answer); attachment with no sales data 2; attachment with sales data 5 (agent action); check item availability 5; create or update sales quote 5; create or update sales order 5; generate response email 2. Docs example: 100 requests per month with half having a usable attachment is about 1,650 credits per month. Billing model (prepaid Copilot Credit packs or pay-as-you-go) must be set up for the environment. When credits run out the agent stops processing new emails and resumes later, so set a daily email limit. Prerequisites: Configure All Agents permission, Microsoft 365 user and shared mailbox for email monitoring. Whether the agent needs a separate user licence: Not confirmed.","src":["https://learn.microsoft.com/dynamics365/business-central/dev-itpro/administration/tenant-admin-center-manage-consumption-billing","https://learn.microsoft.com/dynamics365/business-central/sales-order-agent","https://learn.microsoft.com/dynamics365/business-central/sales-order-agent-setup"]},{"app":"Business Central","agent":"Payables Agent","what":"Watches a mailbox for vendor invoices and credit notes (PDF), extracts the data, finds the vendor, suggests accounts and purchase order matches, and creates a draft purchase document for a person to review. It never posts documents.","status":"Generally available (Set up Payables Agent page says it is listed under Generally available). Page date: Not confirmed.","cost":"U","costd":"Process invoice 50 credits (10 agent actions); process invoice line 5 credits. Emails without a valid PDF invoice cost nothing. Docs example: 100 invoices per month with 3 lines each is 6,500 credits per month. Free trial mode processes the first 50 invoices without consuming billable credits. Billing model (prepaid packs or pay-as-you-go) must be set up. Essential and Premium licence entitlements include the Manage Agent Tasks permission for supervising users. Prerequisites: supported country or region, Configure All Agents permission, Microsoft 365 mailbox. Validated for English only.","src":["https://learn.microsoft.com/dynamics365/business-central/dev-itpro/administration/tenant-admin-center-manage-consumption-billing","https://learn.microsoft.com/dynamics365/business-central/payables-agent","https://learn.microsoft.com/dynamics365/business-central/payables-agent-setup","https://learn.microsoft.com/dynamics365/business-central/faqs-payables-agent"]},{"app":"Business Central","agent":"Expense Agent","what":"Employees upload or email receipt photos or PDFs; the agent reads them, categorises them and builds draft expense reports (also mileage, per diem and travel requests) for review and approval. Nothing is posted without human approval.","status":"Production-ready preview (pages marked prerelease documentation; billing page labels it Expense Agent (preview)). Page date: Not confirmed.","cost":"U","costd":"50 Copilot Credits per uploaded receipt regardless of complexity or number of lines (covers extraction, categorisation, itemisation and report grouping). Billing model (prepaid packs or pay-as-you-go) must be set up before use. Employees using the web app, email or Copilot chat do not need a Business Central licence; those channels use credits instead. Prerequisites: supported country or region, SUPER or the listed permission sets, shared mailbox if email intake is wanted. Validated for English (US) only.","src":["https://learn.microsoft.com/dynamics365/business-central/dev-itpro/administration/tenant-admin-center-manage-consumption-billing","https://learn.microsoft.com/dynamics365/business-central/expense-management/expense-agent","https://learn.microsoft.com/dynamics365/business-central/expense-management/expense-agent-overview","https://learn.microsoft.com/dynamics365/business-central/expense-management/expense-agent-configuration-page"]},{"app":"Project Operations","agent":"Time Entry Agent (feature of the Time and Expense Agent)","what":"Creates draft weekly time entries for each team member from their project task assignments, booked capacity or the previous week's entries, writes comments for them, and reminds them in Teams about missing hours. The person reviews and submits.","status":"Production-ready preview (requires Project Operations 4.140.0.239 or later). Page date: Not confirmed.","cost":"Q","costd":"Credit rate: Not confirmed. Docs list setup as: 13 Power Automate flows activated, feature flag Enable Time and Expense agent (Production Ready Preview), agent published from Copilot Studio, optional dedicated agent user. Docs do not state a licence or credit charge for this agent in the pages read. Each user must give consent and set preferences.","src":["https://learn.microsoft.com/dynamics365/project-operations/time/enable-time-entry-agent","https://learn.microsoft.com/dynamics365/project-operations/time/use-time-entry-agent-in-teams","https://learn.microsoft.com/dynamics365/project-operations/responsible-ai/time-entry-agent-faqs"]},{"app":"Project Operations","agent":"Expense Agent (Expense Entry feature of the Time and Expense Agent)","what":"Picks up receipts from a shared mailbox, mobile app or upload, extracts the details, creates expense lines and groups them into expense reports by trip or project for the user to review in Teams or the app.","status":"Production-ready preview (setup page titled Set up the Expense Agent (Preview); needs finance and operations 10.0.45, 10.0.46 or 10.0.47 with minimum builds). Page date: Not confirmed.","cost":"L","costd":"Credit rate per receipt: Not confirmed. Setup page requires the dedicated agent user to be assigned Dynamics 365 Teams Members, Microsoft 365 Business Basic (or any licence covering Teams and Outlook) and Power Apps Premium licences. FAQ lists a missing Copilot Studio licence as a possible cause of expenses not processing. Uses Copilot Studio, Power Automate and Dataverse virtual entities. Whether Copilot Credits are separately charged: Not confirmed.","src":["https://learn.microsoft.com/dynamics365/project-operations/expense/expense-agent-setup","https://learn.microsoft.com/dynamics365/project-operations/expense/expense-agent-faq","https://learn.microsoft.com/dynamics365/copilot/ai-get-started"]},{"app":"Project Operations","agent":"Approvals Agent (Approvals feature of the Time and Expense Agent)","what":"Does a first check of submitted time, expense and material entries against policy documents you upload, marking each Ready for approval or Needs review with a reason. Optionally it can auto-approve the low-risk ones.","status":"Production-ready preview (page title says preview; requires Project Operations 4.140.0.239 or later). Page date: Not confirmed.","cost":"Q","costd":"Credit rate per record: Not confirmed. The agent is a Microsoft Copilot Studio agent; setup uses the Dynamics 365 Agent Deployment Tool, connections and an agent trigger. Only entry types with an uploaded policy document are reviewed; two modes (Classify, or Classify and auto approve). Docs do not state a licence or credit charge in the pages read.","src":["https://learn.microsoft.com/dynamics365/project-operations/approvals/approvals-agent-intro","https://learn.microsoft.com/dynamics365/project-operations/approvals/approvals-agent-admin-setup","https://learn.microsoft.com/dynamics365/project-operations/responsible-ai/approvals-agent-faq"]}]}</script>
+<script>
+(function(){
+'use strict';
+var D=JSON.parse(document.getElementById('data').textContent);
+var items=D.items,details=D.details;
+var KIND={C:{n:'Assistant',d:'Sits beside you. Summarises, suggests and drafts. You decide.'},
+          A:{n:'Agent',d:'Does a task on its own. A person reviews the result.'},
+          B:{n:'Behind the scenes',d:'Supporting tools, such as a feed of what agents did.'},
+          S:{n:'Build your own',d:'Tools to build custom agents, apps and workflows.'}};
+var COST={U:'Pay per use (Copilot Credits)',L:'Needs an extra licence',Q:'Cost unclear in the docs',
+          I:'Likely included in app licence',M:'Part of Sales agent, which needs a Microsoft 365 Copilot licence',N:'Not stated in the licensing guides'};
+var COSTTIP={I:'Based on partner licensing articles, not confirmed for each feature on a Microsoft page.',
+             M:'Per the Sales agent FAQ and setup pages, users need a Microsoft 365 Copilot licence to access the Sales agent.',
+             N:'None of the licensing guides lists this feature.',Q:'The documentation does not state a licence or credit charge.',
+             U:'Billed by usage through Copilot Studio capacity.',L:'Documentation lists an additional licence requirement.'};
+var STATUS={GA:'Generally available',PRP:'Production-ready preview',PRV:'Preview',NONE:'No status label'};
+var selected=[],kind='all',query='';
+var groupState={};
+var GK={C:'assistants',A:'agents',B:'behind the scenes',S:'build your own'};
+var GK1={C:'assistant',A:'agent',B:'behind the scenes',S:'build your own'};
+
+function el(t,cls,txt){var e=document.createElement(t);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
+function count(f){return items.filter(f).length;}
+
+var tot={C:count(function(i){return i.t==='C'}),A:count(function(i){return i.t==='A'}),B:count(function(i){return i.t==='B'}),S:count(function(i){return i.t==='S'})};
+var areaNames=[];var byArea={};
+items.forEach(function(i){if(!byArea[i.a]){byArea[i.a]=[];areaNames.push(i.a);}byArea[i.a].push(i);});
+areaNames.sort(function(a,b){return byArea[b].length-byArea[a].length||a.localeCompare(b);});
+var max=byArea[areaNames[0]].length;
+
+document.getElementById('lead').textContent=items.length+' AI features across '+areaNames.length+' product areas and platforms. '+
+  tot.C+' assist you, '+tot.A+' act on their own, '+tot.B+' work behind the scenes and '+tot.S+' help you build your own.';
+
+var lg=document.getElementById('legend');
+['C','A','B','S'].forEach(function(k){
+  var li=el('li');var s=el('span','sw '+k);s.setAttribute('aria-hidden','true');
+  var w=el('div');w.append(el('b','',KIND[k].n+' ('+tot[k]+')'),el('span','d',KIND[k].d));
+  li.append(s,w);lg.append(li);
+});
+
+var chart=document.getElementById('chart');
+var foldBtn=document.getElementById('chart-fold'),chartBody=document.getElementById('chart-body');
+var chartSub=document.getElementById('chart-sub'),chartHint=document.getElementById('chart-hint');
+function visibleAreas(){return areaNames.filter(function(a){return selected.indexOf(a)>-1;});}
+foldBtn.addEventListener('click',function(){var open=chartBody.hidden;chartBody.hidden=!open;foldBtn.setAttribute('aria-expanded',String(open));foldBtn.textContent=open?'Hide chart':'Show chart';});
+
+function syncHash(){try{history.replaceState(null,'',selected.length?'#'+selected.map(encodeURIComponent).join('|'):'#');}catch(e){}}
+function setSelected(list){
+  selected=list.slice().sort(function(x,y){return areaNames.indexOf(x)-areaNames.indexOf(y);});
+  query='';document.getElementById('q').value='';
+  syncHash();render();
+}
+function toggleArea(a,on){
+  var has=selected.indexOf(a)>-1;if(on===undefined)on=!has;
+  if(on&&!has)setSelected(selected.concat([a]));
+  else if(!on&&has)setSelected(selected.filter(function(x){return x!==a;}));
+}
+
+function buildChart(){
+  chart.replaceChildren();
+  var vis=visibleAreas();
+  document.getElementById('map-section').hidden=vis.length===0;
+  if(!vis.length)return;
+  chartSub.textContent='Number of AI features in your chosen areas, by kind.';
+  chartHint.textContent='Select a bar to remove that area from your choice.';
+  var vmax=Math.max.apply(null,vis.map(function(a){return byArea[a].length;}));
+  vis.forEach(function(a){
+    var sel=selected.indexOf(a)>-1;
+    var li=el('li');var b=el('button');b.type='button';
+    b.setAttribute('aria-pressed',String(sel));
+    var n=byArea[a].length;
+    b.setAttribute('aria-label',a+': '+n+' features. '+(sel?'Chosen. Press to remove.':'Press to choose.'));
+    var l=el('span','lbl',a);var bar=el('span','bar');bar.style.width=(n/vmax*100)+'%';
+    ['C','A','B','S'].forEach(function(k){
+      var c=byArea[a].filter(function(i){return i.t===k}).length;
+      if(!c)return;var s=el('span','seg '+k,String(c));
+      s.style.flex=c+' 1 0';
+      bar.append(s);
+    });
+    b.append(l,bar,el('span','tot',String(n)));
+    b.onclick=function(){toggleArea(a);};
+    li.append(b);chart.append(li);
+  });
+}
+
+var pickBtn=document.getElementById('pick-btn'),pickPanel=document.getElementById('pick-panel'),pickList=document.getElementById('pick-list'),pickChips=document.getElementById('pick-chips'),pickWrap=document.getElementById('pick');
+var pickBoxes={};
+areaNames.forEach(function(a){
+  var lab=el('label');var cb=el('input');cb.type='checkbox';cb.value=a;
+  cb.addEventListener('change',function(){toggleArea(a,cb.checked);});
+  pickBoxes[a]=cb;lab.append(cb,document.createTextNode(a),el('small','',String(byArea[a].length)));pickList.append(lab);
+});
+function openPick(o){pickPanel.hidden=!o;pickBtn.setAttribute('aria-expanded',String(o));}
+pickBtn.addEventListener('click',function(){openPick(pickPanel.hidden);});
+document.addEventListener('click',function(e){if(!pickPanel.hidden&&!pickWrap.contains(e.target))openPick(false);});
+pickWrap.addEventListener('keydown',function(e){if(e.key==='Escape'&&!pickPanel.hidden){openPick(false);pickBtn.focus();}});
+document.getElementById('pick-all').addEventListener('click',function(){setSelected(areaNames);});
+document.getElementById('pick-none').addEventListener('click',function(){setSelected([]);});
+function syncPick(){
+  areaNames.forEach(function(a){pickBoxes[a].checked=selected.indexOf(a)>-1;});
+  pickBtn.textContent=selected.length===0?'Choose areas':(selected.length===1?selected[0]:selected.length+' areas chosen');
+  pickChips.replaceChildren();
+  selected.forEach(function(a){
+    var li=el('li','',a);var x=el('button','','\u00d7');x.type='button';x.setAttribute('aria-label','Remove '+a);
+    x.addEventListener('click',function(){toggleArea(a,false);});li.append(x);pickChips.append(li);
+  });
+}
+
+var kinds=document.getElementById('kinds');
+function buildKinds(pool){
+  kinds.replaceChildren();
+  [['all','All'],['C','Assistants'],['A','Agents'],['B','Behind the scenes'],['S','Build your own']].forEach(function(p){
+    var n=p[0]==='all'?pool.length:pool.filter(function(i){return i.t===p[0]}).length;
+    var b=el('button','',p[1]+' ('+n+')');b.type='button';b.setAttribute('aria-pressed',String(kind===p[0]));
+    b.onclick=function(){kind=p[0];render();};kinds.append(b);
+  });
+}
+
+function linkList(srcs){
+  var ul=el('ul');
+  srcs.forEach(function(u){
+    var li=el('li');
+    if(/^https?:\/\//.test(u)){var a=el('a','',u.replace(/^https?:\/\//,''));a.href=u;a.rel='noopener';a.target='_blank';li.append(a);}
+    else li.textContent=u;
+    ul.append(li);
+  });
+  return ul;
+}
+
+function itemEl(i,showArea){
+  var d=el('article','item');
+  var top=el('div','top');
+  var h=el('h4');var sw=el('span','sw '+i.t);sw.setAttribute('aria-hidden','true');
+  var nm=el('span');nm.append(document.createTextNode(i.n));
+  if(showArea)nm.append(el('span','area',i.a));
+  h.append(sw,nm);
+  var chips=el('div','chips');
+  chips.append(el('span','chip',KIND[i.t].n));
+  chips.append(el('span','chip pv',STATUS[i.s]));
+  if(i.lp==='P')chips.append(el('span','chip pp','Paid public preview'));
+  if(i.ret)chips.append(el('span','chip ret','Being retired'));
+  top.append(h,chips);
+  d.append(top,el('p','',i.d));
+  var c=el('span','cost '+i.c,i.cl||COST[i.c]);c.title=i.ct||COSTTIP[i.c]||'';
+  d.append(c);
+  if(i.x>=0){
+    var x=details[i.x];
+    var dt=el('details');dt.append(el('summary','','Status, cost breakdown and sources'));
+    var g=el('div','dl');
+    var a1=el('div');a1.append(el('h5','','Status on the Microsoft page'),el('p','',x.status));
+    var a2=el('div');a2.append(el('h5','','Cost detail'),el('p','',x.costd));
+    var a3=el('div');a3.append(el('h5','','Sources'),linkList(x.src));
+    var a4=el('div');a4.append(el('h5','','Dynamics 365 Licensing Guide (November 2026)'),el('p','',i.lg));
+    g.append(a1,a4,a2,a3);dt.append(g);d.append(dt);
+  }
+  return d;
+}
+
+function render(){
+  var q=query.trim().toLowerCase();
+  var pool=[];
+  if(q)pool=items.filter(function(i){return (i.n+' '+i.d+' '+i.a).toLowerCase().indexOf(q)>-1;});
+  else areaNames.forEach(function(a){if(selected.indexOf(a)>-1)pool=pool.concat(byArea[a]);});
+  buildKinds(pool);
+  var rows=pool.filter(function(i){return kind==='all'||i.t===kind;});
+  var title=q?'Search results for "'+query.trim()+'"':(selected.length===1?selected[0]:(selected.length>1?selected.length+' areas chosen':'No area chosen'));
+  document.getElementById('area-title').textContent=title;
+  document.getElementById('area-count').textContent=(q||selected.length)?rows.length+' of '+pool.length+' shown':'';
+  var L=document.getElementById('list');L.replaceChildren();
+  var acts=document.getElementById('grpactions');
+  var groups=[];
+  areaNames.forEach(function(a){var r=rows.filter(function(i){return i.a===a;});if(r.length)groups.push([a,r]);});
+  if(!q&&!selected.length){L.append(el('div','empty','Choose one or more areas above, or search all features.'));acts.hidden=true;}
+  else if(!groups.length){L.append(el('div','empty','Nothing matches. Clear the search or choose another kind.'));acts.hidden=true;}
+  else{
+    acts.hidden=groups.length<2;
+    var defOpen=groups.length<=2;
+    groups.forEach(function(g){
+      var a=g[0],r=g[1];
+      var d=el('details','grp');d.setAttribute('data-area',a);
+      d.open=(a in groupState)?groupState[a]:defOpen;
+      var s=el('summary');
+      s.append(el('span','gname',a),el('span','gcount',r.length+(r.length===1?' feature':' features')));
+      var mini=el('span','gkinds');
+      ['C','A','B','S'].forEach(function(k){
+        var c=r.filter(function(i){return i.t===k}).length;if(!c)return;
+        var sp=el('span','gk');var sw=el('span','sw '+k);sw.setAttribute('aria-hidden','true');
+        sp.append(sw,document.createTextNode(c+' '+(c===1?GK1[k]:GK[k])));mini.append(sp);
+      });
+      s.append(mini);
+      s.addEventListener('click',function(){groupState[a]=!d.open;});
+      var body=el('div','grpbody');r.forEach(function(i){body.append(itemEl(i,false));});
+      d.append(s,body);L.append(d);
+    });
+  }
+  syncPick();buildChart();
+}
+
+document.getElementById('q').addEventListener('input',function(e){query=e.target.value;render();});
+function setAllGroups(open){Array.prototype.forEach.call(document.querySelectorAll('#list details.grp'),function(d){d.open=open;groupState[d.getAttribute('data-area')]=open;});}
+document.getElementById('exp-all').addEventListener('click',function(){setAllGroups(true);});
+document.getElementById('exp-none').addEventListener('click',function(){setAllGroups(false);});
+document.getElementById('to-calc').addEventListener('click',function(e){e.preventDefault();if(window.showTab)window.showTab('calc',true);});
+
+(function(){
+  var init=(location.hash||'').slice(1).split('|').map(function(x){try{return decodeURIComponent(x);}catch(e){return x;}}).filter(function(x,i,arr){return byArea[x]&&arr.indexOf(x)===i;});
+  if(!init.length&&byArea['Sales'])init=['Sales'];
+  selected=init.sort(function(x,y){return areaNames.indexOf(x)-areaNames.indexOf(y);});
+})();
+
+function short(n){return n.replace(/\s*\(.*\)$/,'');}
+function table(tb,rows,rowhead){
+  rows.forEach(function(r){var tr=el('tr');r.forEach(function(c,k){var cell=el(rowhead&&k===0?'th':'td','',c);if(rowhead&&k===0)cell.scope='row';tr.append(cell);});tb.append(tr);});
+}
+var APP={'Microsoft 365 Copilot / Dynamics 365 Sales':'Sales agent','Dynamics 365 Sales':'Sales','Customer Service / Contact Center':'Service','Customer Insights - Journeys':'Journeys','Supply Chain Management':'Supply Chain'};
+
+var spans=[
+ ['Shared Power Apps layer','Sales, Customer Service and Customer Insights are model-driven Power Apps, so they share AI features such as row summaries and form fill. The Power Platform guide lists app skills (form filling, summaries, data exploration, visualization) under Power Apps Premium, and the Copilot chat needs a Microsoft Copilot licence as well. Neither guide says how this applies inside Dynamics 365 apps.','Power Platform guide p.7'],
+ ['Copilot Credits','The unit of consumption across Copilot Studio, Microsoft Copilot and AI features in Dynamics 365 and Power Platform. Dynamics 365 agents and custom Copilot Studio agents both run on credits, and usage is managed in one place, the Power Platform admin center. Custom agents that employees use through Microsoft channels can be covered by their Microsoft Copilot licence instead.','Copilot Studio guide pp.7, 13, 14; Dynamics 365 guide p.63'],
+ ['Business application tools (MCP)','Tools across Power Platform, Dataverse and Dynamics 365 that give agents shared business context, exposed through MCP servers or Work IQ APIs. Using them consumes Copilot Credits. Power Apps and finance and operations apps have separate MCP servers.','Power Platform guide p.24, Dynamics 365 guide p.64, Copilot Studio guide p.10'],
+ ['Dataverse','The data layer under Power Platform and Copilot Studio. It underlies select Dynamics 365 apps, not all of them.','Power Platform guide p.20']
+];
+var sg2=document.getElementById('spangrid');
+spans.forEach(function(s){var c=el('div','cc');c.append(el('h3','',s[0]),el('p','',s[1]),el('p','src',s[2]));c.firstChild.style.cssText='font-family:var(--serif);font-size:1.1rem;margin:0 0 8px';sg2.append(c);});
+
+table(document.getElementById('asst'),[
+ ['Sales','Copilot, assistant cards, email engagement, auto capture, Conversation Intelligence (unlimited), Sales Accelerator and scoring (each up to 1,500 records a month): Enterprise, Premium. Full Sales Insights: Premium or an add-on.','Professional','47-52'],
+ ['Customer Service','Copilot: Enterprise, Premium. Customer Service Insights (topic clustering): Enterprise.','Professional','26-29'],
+ ['Contact Center','Call intelligence (6,000 minutes) and intelligent voicebot (2,000 minutes) per user per month','Digital alone has neither. Generative AI in the voicebot needs credits.','19, 21'],
+ ['Field Service','Field Service licence','Contractor licence','34'],
+ ['Business Central','Copilot: Essentials, Premium (plus 30 minutes per tenant of Azure AI). AI forecasting needs an Azure Machine Learning subscription.','Team Members is not mentioned','9-10'],
+ ['Finance','"AI capabilities within Dynamics 365 Finance" in Finance and Finance Premium. No individual features named.','-','37-38'],
+ ['Sustainability Manager','Copilot listed as a preview entitlement (tier unclear). Intelligent Insights: Premium only.','Essentials for Intelligent Insights','60, 62'],
+ ['Intelligent Order Management','AI rules-based fulfilment is part of the per-tenant licence (1,000 order lines).','-','42'],
+ ['Supply Chain, Commerce, Customer Insights, Project Operations, Human Resources','Not stated. The guide lists no assistant features for these.','Not stated','-']
+],true);
+table(document.getElementById('creds'),[
+ ['Sales','Premium: 1,000 per user per month','Professional, Enterprise (Relationship Sales: agents not included)'],
+ ['Customer Service','Premium: 1,000 per user per month','Professional, Enterprise'],
+ ['Finance','Finance Premium: 1,000 per user per month','Finance'],
+ ['Supply Chain Management','Premium: 1,000 per user per month','Supply Chain Management'],
+ ['Contact Center','Nothing. Customer Service Premium includes Contact Center Digital + Voice and 1,000 credits.','Digital, Voice, Digital + Voice'],
+ ['Business Central','Nothing','Essentials, Premium (agents require credits)'],
+ ['Field Service, Project Operations, Customer Insights','Not stated. They are not in the guide\u2019s entitlement table.','-']
+],true);
+document.getElementById('costnote').textContent='Credits accrue at tenant level and should be allocated to environments, so Finance agents do not run on credits earned from Sales Premium. At the pay-as-you-go list price of $0.01 per credit, 1,000 included credits are worth about $10 per user per month (my arithmetic). Seeded AI Builder credits are being replaced by Copilot Credits: the Power Platform guide says existing entitlements stayed available until 1 November 2026, a date that has now passed (p.30).';
+
+var groups={U:[],L:[],Q:[]};
+details.forEach(function(d){groups[d.cost].push(short(d.agent)+' ('+(APP[d.app]||d.app)+')');});
+var cg=document.getElementById('costgrid');
+[['U','Billed by usage. Each run draws down credits, and some agents stop when capacity runs out.'],
+ ['L','Needs a licence on top of the app, such as Microsoft 365 Copilot or extra Power Apps and Teams licences.'],
+ ['Q','The Learn pages do not say what it costs. They do say Copilot Studio billing must be enabled and the agent is billed per deployed agent.']].forEach(function(p){
+  var c=el('div','cc');c.append(el('span','cost '+p[0],COST[p[0]]),el('div','n',String(groups[p[0]].length)),el('p','',p[1]));
+  var ul=el('ul');groups[p[0]].forEach(function(n){ul.append(el('li','',n));});c.append(ul);cg.append(c);
+});
+
+var rates=[
+ ['Business Central: Payables Agent','50 credits per invoice plus 5 per invoice line. Emails without a valid PDF invoice cost nothing. The first 50 invoices are free in trial mode. Example: 100 invoices with 3 lines each is about 6,500 credits a month.','$0.50 per invoice plus $0.05 per line. The example is about $65 a month.'],
+ ['Business Central: Expense Agent','50 credits per uploaded receipt, however complex.','$0.50 per receipt.'],
+ ['Business Central: Sales Order Agent','2 to 5 credits per step: email analysis 2, attachment 2 or 5, item availability 5, quote or order 5, reply email 2. Example: 100 requests a month, half with a usable attachment, is about 1,650 credits.','The example is about $16.50 a month.'],
+ ['Copilot Studio voice (may apply to the voice intent agent)','10 credits per minute for classic voice, 35 for generative voice, 75 for premium generative voice. Whether these apply to the Customer Intent Agent for voice is not confirmed.','About $0.10, $0.35 and $0.75 per minute.'],
+ ['Power Apps hosted in Copilot Managed Runtime','Hosting is included with Power Apps Premium up to its request limits. Usage beyond that is 0.1 credits per API call (Power Platform guide p.7).','About $0.001 per API call beyond the limits.']
+];
+var buy=[
+ ['Pay-as-you-go meter','$0.01 per credit, billed monthly after use','No up-front commitment and no interruption from overages. Makers need the Copilot Studio Author role ($0). Counts toward an Azure consumption commitment. Copilot Studio guide p.14.'],
+ ['Credit pack subscription','$200 per month per pack of 25,000 credits, billed annually (about $0.008 per credit)','Unused credits do not roll over, and usage above purchased capacity can be blocked. The pay-as-you-go meter is only charged once packs are used up. Makers need a $0 Copilot Studio User Licence. Copilot Studio guide pp.13, 16-17.'],
+ ['Copilot Credit Pre-Purchase Plan','One year, paid up front. From 300,000 credits at a 5% discount to 300,000,000 credits at 20% (nine tiers).','Unused credits expire at the end of the term. Extra usage can be bought or billed pay-as-you-go. Copilot Studio guide p.15.'],
+ ['Microsoft Agent Pre-Purchase Plan','One year, paid up front, in Agent Commit Units of $1 each (equal to 100 credits). From 20,000 units at 5% to 500,000 units at 15%.','Also covers eligible Microsoft Foundry usage. Unused units do not roll over. Copilot Studio guide pp.15-16.']
+];
+table(document.getElementById('buy'),buy,true);
+table(document.getElementById('rates'),rates,true);
+
+table(document.getElementById('csharness'),[
+ ['GitHub Copilot harness','Agents and workflows that automate end-to-end business processes. Apps can only be built this way.','Credits while building and while running','No label. Apps: paid public preview. Pp.5, 7-8'],
+ ['Customer conversation harness','Customer-facing agents that answer questions, complete tasks and support people over voice and chat.','Credits while running','Public preview. P.5'],
+ ['Standard harness','Rule-based agents with predefined topics and flows, plus agent flows.','Credits based on the features used','No label. P.6']
+],true);
+table(document.getElementById('csuse'),[
+ ['Assistants for employees in Microsoft channels','Publish an agent to Microsoft channels for employee use.','Covered by the Microsoft Copilot licence when the agent runs as a licensed user. Standard harness has fair usage limits. The other two harnesses still use credits (p.7).'],
+ ['Agents for customers over chat and voice','Customer-facing agents. Voice agents are billed by call length to the nearest second.','Credits (pp.5, 7)'],
+ ['Extend Microsoft\u2019s Dynamics 365 agents','Add agent flows, AI tools, custom actions, REST APIs, computer use, tenant graph grounding, autonomous actions and deep reasoning.','Credits. Premium licences bundle 1,000 per user per month (Dynamics 365 guide pp.63, 77)'],
+ ['Custom agents on Dynamics 365 data','Connect to Dynamics 365 MCP servers. Business application tools use credits, and you still need the Dynamics 365 or Power Platform licence for the data.','Credits, including the bundled Premium credits (Copilot Studio guide p.10, Dynamics 365 guide p.63)'],
+ ['Automated workflows','Agent flows and workflows. Cloud flows run on up to 250,000 Power Platform requests a day at tenant level included with the Copilot Studio subscription, and do not use up Copilot Studio capacity.','Credits for the agent steps (Power Platform guide p.15)'],
+ ['Apps','Build apps in Copilot Studio and host them in the Copilot Managed Runtime (paid public preview).','Credits to build and host. Included for Power Apps Premium users up to request limits (pp.7-8)']
+],true);
+table(document.getElementById('csstart'),[
+ ['Credits','Buy through pay-as-you-go, a capacity pack or a pre-purchase plan. See "How credits are bought".'],
+ ['Maker access','$0. Pay-as-you-go and pre-purchase plans need the Copilot Studio Author role. Capacity packs need a Copilot Studio User Licence for each maker.'],
+ ['Cost of building','Building with natural language, evaluation and preview uses credits. Manual configuration without a language model does not (p.7).'],
+ ['Data storage','Dataverse for Copilot Studio: 15 GB database, 20 GB file and 2 GB log per tenant by default. Extra is $40 per GB a month for database ($30 at 1,000 GB or more), $2 for file and $10 for log (pp.9-10).'],
+ ['Connectors and governance','Standard, premium and custom connectors and Managed Environments are included. Data loss prevention, sharing limits and a switch to stop publishing are available (pp.7, 11-12).'],
+ ['Support (optional)','Professional Direct Support is $9 per user a month, up to 250 licences (p.13).']
+],true);
+table(document.getElementById('seats'),[
+ ['Sales','Professional $65, Enterprise $105, Premium $150. Relationship Sales is variable.','52'],
+ ['Customer Service','Professional $50, Enterprise $105, Premium $195','29'],
+ ['Contact Center','Digital $95, Voice $95, Digital + Voice $110','21'],
+ ['Field Service','$105. Contractor $50.','34'],
+ ['Finance','$210. Finance Premium $300.','38'],
+ ['Supply Chain Management','$210. Premium $300.','58'],
+ ['Business Central','Essentials $80, Premium $110','11'],
+ ['Project Operations','$135','46'],
+ ['Commerce','$210','17'],
+ ['Human Resources','$135','41'],
+ ['Customer Insights','$1,700 per tenant per month','24'],
+ ['Sustainability','Essentials $4,000, Premium $12,000 per tenant per month','62']
+],true);
+table(document.getElementById('platform'),[
+ ['Power Apps Premium','$20 per user a month ($12 with 2,000 or more new licences)','Unlimited custom apps and Power Pages sites. Includes Copilot in-app features and app skills, though the Copilot chat also needs a Microsoft Copilot licence (Power Platform guide pp.6-8).'],
+ ['Power Apps per app','$10 per active user per app a month','The change log lists per app as end of sale from January 2026 (pp.8, 30).'],
+ ['Power Automate','Premium $15 per user. Process $150 per bot. Hosted Process $215 per bot. Per flow $100 (minimum 5). Unattended RPA add-on $150 per bot. Process Mining $5,000 per 100 GB.','No AI features listed (pp.9-16).'],
+ ['Power Pages','Authenticated users from $200 per 100 users, falling to $50. Anonymous users from $75 per 500, falling to $25. Pay-as-you-go: $4 per authenticated user, $0.30 per anonymous user.','No AI features listed (pp.16-19).'],
+ ['Dataverse capacity','$40 per GB a month for database, $2 for file, $10 for log','Pay-as-you-go environments: $48, $2.40 and $12 (pp.22-23).']
+],true);
+
+var ag=items.filter(function(i){return i.t==='A'});
+var gg=document.getElementById('guidegrid');
+[['M','Named in the main agent sections','These sit in the Dynamics 365 licensing sections for Sales, Customer Service and Business Central.'],
+ ['P','Paid public preview','Listed in Appendix B. Microsoft may change pricing and business models before GA.'],
+ ['N','Not named separately','The guide does not list these by name.']].forEach(function(p){
+  var c=el('div','cc');var l=ag.filter(function(i){return i.lp===p[0]});
+  c.append(el('h3','',p[1]),el('div','n',String(l.length)),el('p','',p[2]));
+  c.firstChild.style.cssText='font-family:var(--serif);font-size:1.1rem;margin:0 0 6px';
+  var ul=el('ul');l.forEach(function(i){ul.append(el('li','',i.n+' ('+i.a+')'));});c.append(ul);gg.append(c);
+});
+
+var st={GA:0,PRP:0,PRV:0,NONE:0};ag.forEach(function(i){st[i.s]++;});
+var sg=document.getElementById('statusgrid');
+[['GA','Generally available'],['PRP','Production-ready preview'],['PRV','Preview'],['NONE','No status stated']].forEach(function(p){
+  var c=el('div','cc');c.append(el('div','n',String(st[p[0]])),el('p','',p[1]));
+  var ul=el('ul');ag.filter(function(i){return i.s===p[0]}).forEach(function(i){ul.append(el('li','',i.n+(i.ret?' (being retired)':'')));});
+  c.append(ul);sg.append(c);
+});
+
+render();
+})();
+</script>
+<script>
+(function(){
+'use strict';
+function el(t,cls,txt){var e=document.createElement(t);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
+var LIC=[
+ {app:'Sales',st:'agents such as Sales Qualification and Opportunity run on credits',opts:[['Professional',65],['Enterprise',105],['Premium',150,1]]},
+ {app:'Customer Service',st:'agents such as Case Management run on credits',opts:[['Professional',50],['Enterprise',105],['Premium',195,1]]},
+ {app:'Contact Center',st:'agents and generative voice run on credits',opts:[['Digital',95],['Voice',95],['Digital + Voice',110]]},
+ {app:'Field Service',st:'the Scheduling Operations Agent runs on credits',opts:[['Field Service',105],['Contractor',50]]},
+ {app:'Finance',st:'the Account Reconciliation Agent runs on credits',opts:[['Finance',210],['Premium',300,1]]},
+ {app:'Supply Chain Management',st:'the Supplier Communications Agent runs on credits',opts:[['Standard',210],['Premium',300,1]]},
+ {app:'Business Central',st:'the Sales Order, Payables and Expense agents run on credits',opts:[['Essentials',80],['Premium',110]]},
+ {app:'Project Operations',st:'its agents are built with Copilot Studio (credit charge not stated)',opts:[['Standard',135]]},
+ {app:'Commerce',opts:[['Standard',210]]},
+ {app:'Human Resources',opts:[['Standard',135]]},
+ {app:'Customer Insights',unit:'Tenants',st:'conversational journeys use Copilot Studio agents and credits',opts:[['Per tenant',1700]]},
+ {app:'Sustainability',unit:'Tenants',st:'certain features require credits',opts:[['Essentials',4000],['Premium',12000]]},
+ {app:'Power Apps',st:'agents and apps hosted in Copilot Managed Runtime use credits',opts:[['Premium',20]]},
+ {app:'Power Automate',opts:[['Premium',15]]}
+];
+var VOICE=[['Classic voice',10],['Generative voice',35],['Premium generative voice',75]];
+var PAYG=0.01,PACK_PRICE=200,PACK_CREDITS=25000,INCLUDED=1000;
+var money=function(n){n=Math.round(n*100)/100;var d=n%1!==0?2:0;return '$'+n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});};
+var num=function(n){return Math.round(n).toLocaleString('en-US');};
+
+var chosen={},manual=false;
+var licBody=document.getElementById('calc-lic'),out=document.getElementById('calc-out');
+var licRows=[],byApp={};
+
+LIC.forEach(function(L){
+  var tr=el('tr');tr.hidden=true;var th=el('th','',L.app);th.scope='row';
+  var sel=el('select');sel.setAttribute('aria-label',L.app+' licence');
+  sel.append(new Option('None','-1'));
+  L.opts.forEach(function(o,i){sel.append(new Option(o[0]+' \u00b7 $'+o[1].toLocaleString('en-US'),String(i)));});
+  var tdS=el('td');tdS.append(sel);
+  var inp=el('input');inp.type='number';inp.min='0';inp.step='1';inp.value='0';inp.setAttribute('aria-label',L.app+' '+(L.unit||'users').toLowerCase());
+  var tdU=el('td');tdU.append(inp);if(L.unit){tdU.append(el('small','',L.unit));}
+  var tdC=el('td','v','$0');
+  sel.onchange=function(){if(sel.value!=='-1'&&(+inp.value)===0)inp.value='1';calc();};
+  inp.oninput=calc;
+  tr.append(th,tdS,tdU,tdC);licBody.append(tr);
+  var row={L:L,tr:tr,sel:sel,inp:inp,cost:tdC};licRows.push(row);byApp[L.app]=row;
+});
+
+var DATA=JSON.parse(document.getElementById('data').textContent);
+var resetList=[];
+function field(label,type,val,min,max,step){
+  var lab=el('label','',label);var i=el('input');i.type=type;i.min=min;if(max!==undefined)i.max=max;i.step=step||'1';i.value=val;i.setAttribute('aria-label',label);i.oninput=calc;lab.append(i);
+  resetList.push({i:i,v:String(val)});return {lab:lab,i:i};
+}
+function makeRow(title,note,fields,fn){
+  var tr=el('tr');var th=el('th','',title);th.scope='row';if(note)th.append(el('small','',note));
+  var td=el('td');var wrap=el('div','inp');fields.forEach(function(f){wrap.append(f.lab);});td.append(wrap);
+  var out=el('td','c','0');tr.append(th,td,out);
+  return {tr:tr,out:out,fn:fn};
+}
+var f1=field('Invoices a month','number','0','0'),f2=field('Lines per invoice','number','3','0');
+var rowPay=makeRow('Payables Agent','50 credits per invoice plus 5 per line (Business Central docs)',[f1,f2],function(){return (+f1.i.value||0)*(50+5*(+f2.i.value||0));});
+var g1=field('Receipts a month','number','0','0');
+var rowExp=makeRow('Expense Agent','50 credits per receipt (Business Central docs)',[g1],function(){return (+g1.i.value||0)*50;});
+var h1=field('Requests a month','number','0','0'),h2=field('% with a usable attachment','number','50','0','100');
+var rowSO=makeRow('Sales Order Agent','Estimate, see the note below',[h1,h2],function(){var p=Math.min(100,Math.max(0,+h2.i.value||0))/100;return (+h1.i.value||0)*(14+5*p);});
+var v1=field('Minutes a month','number','0','0');var vsel=el('select');VOICE.forEach(function(v,i){vsel.append(new Option(v[0]+' ('+v[1]+' a minute)',String(i)));});vsel.setAttribute('aria-label','Voice type');vsel.onchange=function(){calc();};var vl=el('label','','Voice type');vl.append(vsel);
+resetList.push({i:vsel,v:'0'});
+var rowVoice=makeRow('Voice agent','Billed by call length. Rates from Microsoft\u2019s billing page; whether they apply to a given agent is not confirmed',[v1,{lab:vl,i:vsel}],function(){return (+v1.i.value||0)*VOICE[+vsel.value][1];});
+var a1=field('API calls beyond the limits','number','0','0');
+var rowRun=makeRow('Apps in Managed Runtime','0.1 credits per API call beyond Power Apps Premium request limits',[a1],function(){return (+a1.i.value||0)*0.1;});
+var o1=field('Credits a month','number','0','0');
+var rowOther=makeRow('Other agents and custom Copilot Studio agents','Agents with no published rate. Enter a figure from Microsoft\u2019s Copilot Credit Estimator',[o1],function(){return +o1.i.value||0;});
+var SPECIAL={'Payables Agent':rowPay,'Expense Agent':rowExp,'Sales Order Agent':rowSO};
+
+var CS_SET=['Case Management Agent','Customer Knowledge Management Agent','Quality Evaluation Agent','Customer Intent Agent'];
+var CC_SET=['Customer Assist Agent','Quality Assurance Agent','Service Operations Agent','Customer Intent Agent for voice','Customer Intent Agent','Customer Knowledge Management Agent'];
+var CSCC='Customer Service / Contact Center';
+function agentsFor(app){
+  var all=DATA.items.filter(function(i){return i.t==='A';});
+  var by=function(a){return all.filter(function(i){return i.a===a;});};
+  switch(app){
+    case 'Sales':return by('Sales');
+    case 'Customer Service':return by(CSCC).filter(function(i){return CS_SET.indexOf(i.n)>-1;});
+    case 'Contact Center':return by(CSCC).filter(function(i){return CC_SET.indexOf(i.n)>-1;});
+    case 'Field Service':return by('Field Service');
+    case 'Finance':return by('Finance');
+    case 'Supply Chain Management':return by('Supply Chain Management');
+    case 'Business Central':return by('Business Central');
+    case 'Project Operations':return by('Project Operations');
+    case 'Customer Insights':return by('Customer Insights - Journeys');
+  }
+  return [];
+}
+var COSTMAP={U:'Pay per use (Copilot Credits)',L:'Needs an extra licence',Q:'Cost unclear in the docs'};
+function firstSentence(d){var s=d.split('. ')[0];if(s.length>150)s=s.slice(0,147).replace(/\s+\S*$/,'')+'\u2026';return s.replace(/\.$/,'')+'.';}
+var genRows={};
+function rowFor(i){
+  if(i.a==='Business Central'&&SPECIAL[i.n])return SPECIAL[i.n];
+  var key=i.a+'|'+i.n;if(genRows[key])return genRows[key];
+  var f=field('Credits a month','number','0','0');
+  var r=makeRow(i.n,'',[f],function(){return +f.i.value||0;});
+  var th=r.tr.firstChild;
+  th.append(el('small','',firstSentence(i.d)));
+  th.append(el('small','',(i.cl||COSTMAP[i.c]||'')+(i.lp==='P'?' \u00b7 Paid public preview':'')+' \u00b7 No published credit rate'));
+  genRows[key]=r;return r;
+}
+var groupsEl=document.getElementById('calc-groups'),groupsInfo=[],openState={},lastSig=null;
+function group(key,title,count,rows){
+  var d=el('details','grp');d.open=(key in openState)?openState[key]:true;
+  var s=el('summary');s.append(el('span','gname',title));if(count)s.append(el('span','gcount',count));
+  var sum=el('span','gkinds','0 credits');s.append(sum);
+  s.addEventListener('click',function(){openState[key]=!d.open;});
+  var body=el('div','grpbody');var tw=el('div','tw');var tb=el('table','calc');
+  var th=el('thead');var hr=el('tr');['Agent','Your numbers','Credits'].forEach(function(h,k){var c=el('th','',h);c.scope='col';if(k===2)c.style.textAlign='right';hr.append(c);});th.append(hr);
+  var tbody=el('tbody');rows.forEach(function(r){tbody.append(r.tr);});
+  tb.append(th,tbody);tw.append(tb);body.append(tw);d.append(s,body);groupsEl.append(d);
+  groupsInfo.push({rows:rows,sumEl:sum});
+}
+function buildGroups(){
+  groupsEl.replaceChildren();groupsInfo=[];
+  var shown={};
+  LIC.forEach(function(L){
+    if(!chosen[L.app])return;
+    var ag=agentsFor(L.app).filter(function(i){return !shown[i.a+'|'+i.n];});
+    if(!ag.length)return;
+    var rows=ag.map(function(i){shown[i.a+'|'+i.n]=1;return rowFor(i);});
+    group(L.app,L.app,ag.length+(ag.length===1?' agent':' agents'),rows);
+  });
+  var sr=[];
+  if(chosen['Contact Center']||chosen['Customer Service']||manual)sr.push(rowVoice);
+  if(chosen['Power Apps']||manual)sr.push(rowRun);
+  sr.push(rowOther);
+  group('studio','Copilot Studio','voice, apps and custom agents',sr);
+}
+
+function autoAreas(){return LIC.filter(function(L){return chosen[L.app]&&L.st;});}
+function studioOn(){return autoAreas().length>0||manual;}
+
+function buy(net){
+  if(net<=0)return {payg:0,mix:0,packs:0,rest:0,cost:0};
+  var payg=net*PAYG;var best=null;var maxK=Math.ceil(net/PACK_CREDITS);
+  for(var k=0;k<=maxK;k++){var rest=Math.max(0,net-k*PACK_CREDITS);var c=k*PACK_PRICE+rest*PAYG;if(!best||c<best.cost-1e-9)best={packs:k,rest:rest,cost:c};}
+  return {payg:payg,mix:best.cost,packs:best.packs,rest:best.rest,cost:best.cost};
+}
+function card(title,big,sub){var c=el('div','cc');c.append(el('p','',title),el('div','n',big));if(sub)c.append(el('p','',sub));return c;}
+
+/* picklist */
+var cpBtn=document.getElementById('cpick-btn'),cpPanel=document.getElementById('cpick-panel'),cpList=document.getElementById('cpick-list'),cpChips=document.getElementById('cpick-chips'),cpWrap=document.getElementById('cpick');
+var boxes={};
+LIC.forEach(function(L){
+  var lab=el('label');var cb=el('input');cb.type='checkbox';cb.value=L.app;
+  cb.addEventListener('change',function(){chooseApp(L.app,cb.checked);calc();});
+  boxes[L.app]=cb;lab.append(cb,document.createTextNode(L.app));cpList.append(lab);
+});
+cpList.append(el('div','pickgroup','Build your own'));
+var stLab=el('label');var stCb=el('input');stCb.type='checkbox';stCb.value='Copilot Studio';var stNote=el('small','','');
+stCb.addEventListener('change',function(){if(!autoAreas().length){manual=stCb.checked;calc();}});
+stLab.append(stCb,document.createTextNode('Copilot Studio'),stNote);cpList.append(stLab);
+function openPick(o){cpPanel.hidden=!o;cpBtn.setAttribute('aria-expanded',String(o));}
+cpBtn.addEventListener('click',function(){openPick(cpPanel.hidden);});
+document.addEventListener('click',function(e){if(!cpPanel.hidden&&!cpWrap.contains(e.target))openPick(false);});
+cpWrap.addEventListener('keydown',function(e){if(e.key==='Escape'&&!cpPanel.hidden){openPick(false);cpBtn.focus();}});
+document.getElementById('cpick-all').addEventListener('click',function(){LIC.forEach(function(L){chooseApp(L.app,true);});calc();});
+document.getElementById('cpick-none').addEventListener('click',function(){LIC.forEach(function(L){chosen[L.app]=false;});manual=false;calc();});
+
+function chooseApp(app,on){
+  chosen[app]=!!on;
+  if(on){var r=byApp[app];if(r.sel.value==='-1'||(+r.inp.value)===0){r.sel.value='0';r.inp.value='1';}}
+}
+function syncPick(){
+  var n=0;LIC.forEach(function(L){boxes[L.app].checked=!!chosen[L.app];if(chosen[L.app])n++;});
+  var auto=autoAreas().length>0,on=auto||manual;
+  stCb.checked=on;stCb.disabled=auto;stNote.textContent=auto?'added automatically':'';
+  cpBtn.textContent=n===0?'Choose areas':(n===1?LIC.filter(function(L){return chosen[L.app];})[0].app:n+' areas chosen');
+  cpChips.replaceChildren();
+  LIC.forEach(function(L){
+    if(!chosen[L.app])return;
+    var li=el('li','',L.app);var x=el('button','','\u00d7');x.type='button';x.setAttribute('aria-label','Remove '+L.app);
+    x.addEventListener('click',function(){chosen[L.app]=false;calc();});li.append(x);cpChips.append(li);
+  });
+  if(on){
+    var li2=el('li','','Copilot Studio'+(auto?' (added automatically)':''));
+    if(!auto){var x2=el('button','','\u00d7');x2.type='button';x2.setAttribute('aria-label','Remove Copilot Studio');x2.addEventListener('click',function(){manual=false;calc();});li2.append(x2);}
+    else li2.style.paddingRight='12px';
+    cpChips.append(li2);
+  }
+}
+
+function calc(){
+  syncPick();
+  var any=LIC.some(function(L){return chosen[L.app];});
+  var studio=studioOn();
+  document.getElementById('calc-empty').hidden=any||studio;
+  document.getElementById('calc-licwrap').hidden=!any;
+  document.getElementById('calc-studio').hidden=!studio;
+  out.hidden=!(any||studio);
+  var au=autoAreas();
+  document.getElementById('calc-auto').textContent=au.length?'Copilot Studio added automatically for: '+au.map(function(L){return L.app+' ('+L.st+')';}).join('; ')+'.':(manual?'Copilot Studio added by you, for custom agents, voice and apps.':'');
+  var lic=0,incUsers=0;
+  licRows.forEach(function(r){
+    var on=!!chosen[r.L.app];r.tr.hidden=!on;if(!on)return;
+    var i=+r.sel.value,u=Math.max(0,+r.inp.value||0),cost=0;
+    if(i>=0){var o=r.L.opts[i];cost=o[1]*u;if(o[2])incUsers+=u;}
+    r.cost.textContent=money(cost);lic+=cost;
+  });
+  var used=0;
+  if(studio){
+    var sig=LIC.filter(function(L){return chosen[L.app];}).map(function(L){return L.app;}).join('|')+(manual?'|m':'');
+    if(sig!==lastSig){buildGroups();lastSig=sig;}
+    groupsInfo.forEach(function(g){var s=0;g.rows.forEach(function(r){var c=Math.max(0,r.fn());r.out.textContent=num(c);s+=c;});g.sumEl.textContent=num(s)+' credits';used+=s;});
+  }else{lastSig=null;}
+  out.replaceChildren();
+  var credit=0,total=lic;
+  var g=el('div','cost-grid');
+  g.append(card('Licences a month',money(lic)));
+  if(studio){
+    var included=incUsers*INCLUDED;var net=Math.max(0,used-included);
+    var b=buy(net);var mode=document.querySelector('input[name=buy]:checked').value;
+    credit=mode==='payg'?b.payg:b.mix;total=lic+credit;
+    g.append(card('Credits used a month',num(used),'Included with Premium licences: '+num(included)));
+    g.append(card('Credits to buy',num(net),net>0?(mode==='payg'?'Pay-as-you-go at $0.01 each':(b.packs>0?b.packs+' pack'+(b.packs>1?'s':'')+' ('+num(b.packs*PACK_CREDITS)+' credits)'+(b.rest>0?' plus '+num(b.rest)+' pay-as-you-go':''):'Pay-as-you-go at $0.01 each')):'Your included credits cover the usage'));
+    g.append(card('Credit cost a month',money(credit),net>0?'Pay-as-you-go only would be '+money(b.payg):''));
+  }
+  out.append(g);
+  var tt=el('div','total');var a=el('div');a.append(el('span','','Estimated total a month'),document.createElement('br'));a.append(el('b','',money(total)));
+  var y=el('div');y.append(el('span','','Estimated total a year'),document.createElement('br'));y.append(el('b','',money(total*12)));
+  tt.append(a,y);out.append(tt);
+}
+Array.prototype.forEach.call(document.querySelectorAll('input[name=buy]'),function(r){r.onchange=calc;});
+function reset(){
+  chosen={};manual=false;
+  licRows.forEach(function(r){r.sel.value='-1';r.inp.value='0';});
+  resetList.forEach(function(x){x.i.value=x.v;});
+  document.querySelector('input[name=buy][value=mix]').checked=true;
+}
+function setLic(app,tier,users){var r=byApp[app];chooseApp(app,true);r.L.opts.forEach(function(o,i){if(o[0]===tier){r.sel.value=String(i);r.inp.value=String(users);}});}
+document.getElementById('calc-reset').onclick=function(){reset();calc();};
+document.getElementById('calc-example').onclick=function(){
+  reset();
+  setLic('Sales','Premium',10);setLic('Customer Service','Enterprise',5);setLic('Business Central','Premium',8);
+  f1.i.value='100';f2.i.value='3';g1.i.value='200';h1.i.value='100';h2.i.value='50';o1.i.value='5000';
+  calc();
+};
+calc();
+})();
+</script>
+<script>
+(function(){
+'use strict';
+var tabs=[].slice.call(document.querySelectorAll('[role=tab]'));
+var panels=[].slice.call(document.querySelectorAll('[role=tabpanel]'));
+var bar=document.querySelector('.tabbar');
+function show(id,scroll){
+  tabs.forEach(function(t){var on=t.getAttribute('data-tab')===id;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;});
+  panels.forEach(function(p){p.hidden=p.getAttribute('data-panel')!==id;});
+  if(scroll&&bar.getBoundingClientRect().top<=1){var pn=document.getElementById('panel-'+id);if(pn)pn.scrollIntoView({block:'start'});}
+}
+window.showTab=show;
+tabs.forEach(function(t,i){
+  t.addEventListener('click',function(){show(t.getAttribute('data-tab'),true);});
+  t.addEventListener('keydown',function(e){
+    var n=-1;
+    if(e.key==='ArrowRight')n=(i+1)%tabs.length;
+    else if(e.key==='ArrowLeft')n=(i-1+tabs.length)%tabs.length;
+    else if(e.key==='Home')n=0;
+    else if(e.key==='End')n=tabs.length-1;
+    if(n>=0){e.preventDefault();tabs[n].focus();show(tabs[n].getAttribute('data-tab'),false);}
+  });
+});
+if((location.hash||'')==='#calculator')show('calc',false);
+})();
+</script>
+</body>
+</html>
